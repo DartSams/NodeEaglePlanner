@@ -1,0 +1,11 @@
+{
+  "name": "eagleplanner",
+  "version": "1.0.0",
+  "description": "todolist/school and event planner app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

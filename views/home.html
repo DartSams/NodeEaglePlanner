@@ -1,0 +1,259 @@
+{% extends 'FutureEagles/html/base.html' %}
+
+{% block sidebar %}
+    <div id="sidebar">
+        <div id="toggle" onclick="showMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div id="sidebar-buttons">
+            <button id="calendar-switch">Calendar</button>
+            <button id="task-switch">Task</button>
+            <button id="notes-switch">Notes</button>
+            <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div></button>
+        </div>
+    </div>
+{% endblock %}
+
+<!-- *******Blueprint for task in list container********* -->
+{% block task_blueprint %}
+    <li>
+        <div id="task">sleep</div>
+        <div id="end-date">5min</div>
+        <div id="status">X</div>
+        <div id="dropdown">
+            <div id="settings-container">
+                <div id="settings">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div id="dropdown-content">
+                <a href="">test 1</a>
+                <a href="">test 2</a>
+                <a href="">test 3</a>
+            </div>
+        </div>
+    </li>
+{% endblock %}
+
+
+{% block task_container %}
+    <ul id="list-container">
+        <button id="create-task">Create new Task</button>
+        <div id="column-titles">
+            <p>Task</p>
+            <p>Due Date</p>
+            <p>Status</p>
+            <p>Edit</p>
+        </div>
+
+        {% for i in user_task %}
+            {% if "default" == i.task %}
+            {% else %}
+                <li id="{{i.task}}">
+                    <div id="task">{{i.task}}</div>
+                    <div id="end-date">{{i.due_date}}</div>
+                    <div id="status">{{i.status}}</div>
+                    <div id="dropdown">
+                        <div id="settings-container">
+                            <div id="settings">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div id="dropdown-content">
+                            <a onclick="testSocket(id)" id="edit task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Edit</a>
+                            <a onclick="testSocket(id)" id="delete task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Delete</a>
+                        </div>
+                    </div>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <div id="popup-container">
+        <div class="popup" id="list-popup">
+            <div class="popup-header"><button>X</button></div>
+            <div class="popup-body"><h3>Please describe the task below.</h3></div>
+            <div class="popup-footer">
+                <input type="text" placeholder="Task..." name="task" id="new-task">
+                <input type="date" name="task-date" id="task-date">
+                <br>
+                <button id="submit-task" >Enter</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block popup_create_task %}
+    <div id="popup-container">
+        <div class="popup">
+            <div class="popup-header"><button>X</button></div>
+            <div class="popup-body"><h3>Please describe the task below.</h3></div>
+            <div class="popup-footer">
+                <input type="text" placeholder="Task..." name="task" id="new-task">
+                <input type="date" name="task-date" id="task-date">
+                <br>
+                <button id="submit-task" >Enter</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block notes_container %}
+
+    <div id="notes-tags-list">
+        
+        <div id="tag-search-div">
+            <input type="text" id="note-tag-input" placeholder="#TagName" >
+            <button type="submit" id="tag-search">Enter</button>
+        </div>
+
+        <div id="tag" class="note-tag-div">
+            <input type="radio" name="tag" value="all" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="all">All</label>
+        </div>
+        
+
+        {% for m in notes_tags %}
+            {% if "#" != m %}
+                <div id="tag" class="note-tag-div">
+                    <input type="radio" name="tag" value="{{m}}" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="{{m}}">{{m}}</label>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <div id="notes-container">
+        <button id="create-note">Create Note</button>
+        <ul id="notes-list">
+            <li class="note {{i.note_tag}}">
+                <pre>Test</pre>
+            </li>
+            {% for i in user_notes %}
+                {% if i.note_tag != "#" %}
+                    <li class="note {{i.note_tag}}" id="{{i.note_tag}}">
+                        <pre>{{i.note_message}}</pre>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <!-- <div id="selected-note-container" class="popup-to-delete">
+            <div id="selected-note">
+                <div id="close-note">X</div>
+                <div id="note">
+                    <pre>Testing</pre>
+                </div>
+                <div id="selected-note-settings">
+                    <button>Edit</button>
+                    <button>Delete</button>
+                </div>
+            </div>
+        </div>
+         -->
+
+        <div id="popup-container">
+            <div class="popup" id="note-popup">
+                <div class="popup-header"><button>X</button></div>
+                <div class="popup-body">
+                    <label for="new-note-tag">Tag:</label>
+                    <input type="text" id="new-note-tag" value="#">
+                </div>
+                <div class="popup-footer">
+                    <textarea name="new-note" id="new-note" cols="30" rows="10"></textarea>
+                    <br>
+                    <button id="submit-note">Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+{% endblock %}
+
+<!-- *******Blueprint for selecting notes in note container********* -->
+{% block selected_note_blueprint %}
+    <div id="selected-note-container" class="popup-to-delete">
+        <div id="selected-note">
+            <div id="close-note">X</div>
+            <div id="note">
+                <pre>Testing</pre>
+            </div>
+            <div id="selected-note-settings">
+                <button>Edit</button>
+                <button>Delete</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block calendar_container %}
+    <div id="calendar-container">
+        <div id="calendar-header">
+            <div id="prev-month"><button>❮</button></div>
+            <div id="current-month-year">Jan 2022</div>
+            <div id="next-month"><button>❯</button></div>
+        </div>
+        <div id="days-container">
+            <ul id="month">
+                <li id="day">
+                    <div id="day-number">1</div>
+                    <div id="day-task">
+                        <div>sleep</div>
+                        <div>play game</div>
+                    </div>
+                </li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+                <li id="day">1</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="popup-container">
+        <div class="popup" id="note-popup">
+            <div class="popup-header"><button>X</button></div>
+            <div class="popup-body">
+                <label for="new-note-tag">Tag:</label>
+                <input type="text" id="new-note-tag" value="#">
+            </div>
+            <div class="popup-footer">
+                <textarea name="new-note" id="new-note" cols="30" rows="10"></textarea>
+                <br>
+                <button id="submit-note">Enter</button>
+            </div>
+        </div>
+    </div>
+{%endblock%}
