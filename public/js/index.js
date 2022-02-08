@@ -1,11 +1,35 @@
-const dropContentList = {
+
+const settingsDropdownContentList = {
     "Edit":"edit task",
-    // "Change status":"change task status",
     "Delete":"delete task"
 }
-const url = "ws://localhost:8000/ws/"
-const socket = new WebSocket(url);
-
+// const url = "ws://eagleplanner.herokuapp.com/ws/FutureEagles/"
+// const url =  'wss://' + '.herokuapp.com' + '/ws/FutureEagles/'
+// const url = (window.location.protocol === 'https:' ? 'wss' : 'ws') + '://'
+// const url = "wss://" + window.location.host + "/ws/FutureEagles/"
+// var loc = window.location;
+// var wsStart = 'ws://';
+// if (loc.protocol == 'https:') {
+//      wsStart = 'wss://'
+// }
+// // var endpoint = wsStart + 'your_ip_address:port_given_to_daphne_server' + '/ws/home';
+// // For above command, it look like this
+// var endpoint = wsStart + window.location.host + '/ws/FutureEagles/';
+// const socket = new WebSocket(endpoint);
+const Months = {
+    1:"January",
+    2:"February",
+    3:"March",
+    4:"April",
+    5:"May",
+    6:"June",
+    7:"July",
+    8:"August",
+    9:"September",
+    10:"October",
+    11:"November",
+    12:"December",
+}
 
 
 function showMobileNav() {
@@ -45,65 +69,80 @@ function showMobileNav() {
 }
 
 
-function openPopup (container) {
-    // console.log(container)
+function openPopup (container,popup,note) {
     container.style.display = "flex"
+    if (popup.id == "list-popup" ) {
+        popup.style.cssText = `
+            width:300px
+        `
+    } else if (popup.id == "note-popup") {
+        popup.style.cssText = `
+            width:80%
+        `
+        if (note) {
+            document.querySelector("#new-note-tag").value = note.id
+            document.querySelector("#new-note").value = note.innerText
+        }
+    }
+    
 } //opens popup conainer recieved from function parameter
 
 function closePopup (container) {
-    // console.log(container)
     container.style.display = "none"
     if (container.className == "popup-to-delete") {
         container.remove()
+        return
     } // important to stop creating many popup containers will delete edit popup container from html
+    // let popupContainer = document.querySelector("#new-note").value = ""
+    else if (container.children.id == "note-popup") {
+        document.querySelector("#new-note").value = ""
+    } else {
+        container.style.display = "none"
+    }
 } //closes popup conainer recieved from function parameter
 
 
 
 
-// socket.onopen = function(event) {
-//     console.log("sockets started")
-//     console.log('connection is open')
-//     console.log(event)
-//     socket.send('Thanks for connecting')
-
-//     for(let i=0;i<=2;i++){
-//         displayNewTask("sleep","now")
-//     } //test the limits of creating task using js dom using automatic data of 100 task
-
-//     socket.send("change task status")
-
-// } //when page first opens
+socket.onopen = function(event) {
+    socket.send('Thanks for connecting')
+    // for(let i=0;i<=100;i++){
+    //     displayNewNote("lorem ipsum") //test the limits of creating notes using js dom using automatic data of 100 notes
+    //     // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
+    // } 
+} //when page first opens
 
 socket.onmessage = function(event) {
     console.log('message is recieved')
-    // console.log(event['data'])
-    // getMe(event['data'])
-    // up(event['data'])
     data = event['data']
-    // console.log(data)
 } //when server sends data to frontend
 
 socket.onclose = function(event) {
     console.log('connection is closed')
-} //
+} 
 
-// socket.onerror = function(event) {
-//     console.log(event)
-// }
+socket.onerror = function(event) {
+    console.log(event)
+}
 
 
 sendTaskData=function(message) {
-    // console.log("tester")
     let popupContainer = document.querySelector("#popup-container")
-    user = document.querySelector('.profile-user').innerText
-    user_id = document.querySelector('.profile-user').id
-    task=document.querySelector('#new-task').value
-    taskDate=document.querySelector('#task-date').value
-    socket.send([message,user,user_id,task,taskDate])
-    // console.log(message,user,user_id,task,taskDate)
-    closePopup(popupContainer)
-    displayNewTask(task,taskDate)
+    let user = document.querySelector('.profile-user').innerText
+    let user_id = document.querySelector('.profile-user').id
+    if (message == "add new task") {
+        task=document.querySelector('#new-task').value
+        taskDate=document.querySelector('#task-date').value
+        socket.send([message,user,user_id,task,taskDate])
+        closePopup(popupContainer)
+        displayNewTask(task,taskDate)
+    } else if (message == "add new note") {
+        let note = document.querySelector("#new-note").value;
+        let noteTag = document.querySelector("#new-note-tag").value
+        socket.send([message,user,user_id,note,noteTag])
+        closePopup(popupContainer)
+        displayNewNote(note,noteTag)
+    }
 }
 
 testSocket = function(data){
@@ -150,29 +189,11 @@ function displayNewTask(task,taskDate) {
     } //creates settings button
     let dropdownContent = document.createElement("div");
     dropdownContent.id = "dropdown-content"
-    // dropContentList = ["link 1","link 2","link 3"]
-    // for (let j = 0;j<=dropContentList.length-1;j++) {
-    //     let dropdownLink = document.createElement("a");
-    //     dropdownLink.innerText = dropContentList[j]
-    //     console.log(dropContentList[j])
-    //     dropdownContent.appendChild(dropdownLink)
-    // }
 
-
-    // dropContentList = {
-    //     "link 1":"first",
-    //     "link 2":"second",
-    //     "link 3":"third"
-    // }
-    for (const key in dropContentList) {
+    for (const key in settingsDropdownContentList) {
         let dropdownLink = document.createElement("a");
         dropdownLink.innerText = key
-        dropdownLink.id = `${dropContentList[dropdownLink.innerText]},${task},${profile.id}` //sets dropdown item element id to object key and gets the current list item index
-        // dropdownLink.id = JSON.stringify({
-        //     "backend task":dropContentList[dropdownLink.innerText],
-        //     "task id":li.id,
-        //     "task":task
-        // })
+        dropdownLink.id = `${settingsDropdownContentList[dropdownLink.innerText]},${task},${profile.id}` //sets dropdown item element id to object key and gets the current list item index
         dropdownLink.addEventListener("click",function(){
             console.log(dropdownLink.id)
             testSocket(dropdownLink.id) 
@@ -188,8 +209,6 @@ function displayNewTask(task,taskDate) {
 } //apends new task to task container
 
 function editTaskPopup(data) {
-    // console.log(data)
-
     const prevData = `${data[1]},${data[2]},${data[3]},${data[4]},${data[5]}`
     const splitPrevData = prevData.split(",")
 
@@ -201,6 +220,7 @@ function editTaskPopup(data) {
 
     let popup = document.createElement("div")
     popup.className = "popup"
+    popup.style.width = "300px"
 
     let popupHeader = document.createElement("div");
     popupHeader.className = "popup-header"
@@ -240,7 +260,6 @@ function editTaskPopup(data) {
     statusInputNonActive.id = "non active"
     statusInputNonActive.value = "non active"
     statusInputNonActive.name = "status"
-    // statusInputNonActive.checked = true
     let nonactiveLabel = document.createElement("label");
     nonactiveLabel.innerText = "deactivate"
     nonactiveLabel.htmlFor = "non active"
@@ -256,6 +275,7 @@ function editTaskPopup(data) {
     saveButton.addEventListener("click",function() {
         saveData(splitPrevData)
         closePopup(popupContainer)
+        window.location.reload()
     })
 
     
@@ -280,7 +300,7 @@ function editTaskPopup(data) {
     popupContainer.append(popup)
     centerDiv.append(popupContainer)
 
-    openPopup(popupContainer)
+    openPopup(popupContainer,popup)
 } //creates a new popup div to edit currently selected task
 
 function saveData(splitPrevData) {
@@ -302,5 +322,262 @@ function saveData(splitPrevData) {
     }
     const newData = `${newDataJSON["task"]},${newDataJSON["due date"]},${selectedSize},${splitPrevData[3]},${splitPrevData[4]}`
 
-    testSocket(`finished editing,${splitPrevData},${newData}`)
-} //sends data to testSocket function with data message of finished editing so it will send data to consumer.py file for db query to change task entry
+    testSocket(`finished editing task,${splitPrevData},${newData}`)
+    document.querySelector("#new-task-input").value = ""
+    document.querySelector("#task-date-input").value = ""
+} //sends data to testSocket function with data message of finished editing task so it will send data to consumer.py file for db query to change task entry
+
+
+function displayNewNote(note,tag) {
+    let x = Math.floor(Math.random() * 256);
+    let y = 100+ Math.floor(Math.random() * 256);
+    let z = 50+ Math.floor(Math.random() * 256);
+    if (x && y && z > 240) {
+        x-=20;
+        y-=30;
+        z-=30
+    }
+    let randomColor = `rgb(${x},${y},${z})`
+    console.log(note)
+    let notesList = document.querySelector("#notes-list")
+    let noteItem = document.createElement("li");
+    noteItem.className = `note ${tag}`
+    noteItem.style.backgroundColor = `${randomColor}`
+    let preText = document.createElement("pre");
+    preText.innerText = note
+
+    noteItem.append(preText)
+    notesList.prepend(noteItem)
+} //creates new notes list item with a random background color
+
+function displayTaggedNotes(tag) {
+    console.log(`${tag}`)
+
+    if (tag != "all") {
+        let noteListReset = document.querySelector("#notes-list").children;
+        for (let i = 0;i<noteListReset.length;i++) {
+            noteListReset[i].style.display = ""
+        } //this is to reset all notes display
+
+        let noteList = document.querySelector("#notes-list").children;
+        for (let i = 0;i<noteList.length;i++) {
+            if (noteList[i].id != `${tag}`) {
+                noteList[i].style.display = "none"
+            }
+        } //this searches all notes in note list and checks if the id matches the current tag function parameter if not change css style display to none
+    } else {
+        let noteListReset = document.querySelector("#notes-list").children;
+        for (let i = 0;i<noteListReset.length;i++) {
+            noteListReset[i].style.display = ""
+        } //this is to reset all notes display
+    }
+}
+
+function selectNote(element) {
+    console.log(element)
+    let center = document.querySelector("#center")
+
+    let selectedNoteContainer = document.createElement("div");
+    selectedNoteContainer.id = "selected-note-container"
+    selectedNoteContainer.className = "popup-to-delete"
+
+    let popupNote = document.createElement("div");
+    popupNote.id = "selected-note"
+    popupNote.style.backgroundColor = element.style.backgroundColor
+
+    let closeNote = document.createElement("div");
+    closeNote.id = "close-note"
+    closeNote.innerText = "X"
+    closeNote.addEventListener("click",function() {
+        closePopup(selectedNoteContainer)
+    })
+    let pre = document.createElement("pre");
+    pre.innerText = element.innerText
+    let editNoteDiv = document.createElement("div");
+    editNoteDiv.id = "selected-note-settings"
+    let editNote = document.createElement("button");
+    editNote.innerText = "Edit"
+    editNote.id = `${document.querySelector(".profile-user").innerText},${document.querySelector(".profile-user").id},${element.innerText},${element.id}`
+    editNote.addEventListener("click",function() {
+        editNotePopup(editNote.id.split(","))
+    })
+    let deleteNote = document.createElement("button");
+    deleteNote.innerText = "Delete"
+
+    const newDataJSON = {
+        "user":document.querySelector(".profile-user").innerText,
+        "user id":document.querySelector(".profile-user").id,
+        "note":pre.innerHTML,
+    }
+    deleteNote.addEventListener("click",function() {
+        testSocket(`delete note,${newDataJSON["user"]},${newDataJSON["user id"]},${newDataJSON["note"].innerHTML}`)
+        element.remove()
+        closePopup(selectedNoteContainer)
+    })
+    popupNote.append(closeNote)
+    popupNote.append(pre)
+    editNoteDiv.append(editNote)
+    editNoteDiv.append(deleteNote)
+    popupNote.append(editNoteDiv)
+    selectedNoteContainer.append(popupNote)
+    center.append(selectedNoteContainer)
+} //when clicking on a note opens a popup displaying the note for easier read and allows editing/deleting
+
+
+function editNotePopup(data) {
+    let centerDiv = document.querySelector("#center")
+
+    let popupContainer = document.createElement("div");;
+    popupContainer.id = "popup-container"
+    popupContainer.className = "popup-to-delete"
+
+    let popup = document.createElement("div")
+    popup.className = "popup"
+    popup.id = "note-popup"
+
+    let popupHeader = document.createElement("div");
+    popupHeader.className = "popup-header"
+    let closePopupButton = document.createElement("button");
+    closePopupButton.innerText = "X"
+    closePopupButton.addEventListener("click",function() {
+        closePopup(popupContainer)
+    })
+
+    let popupBody = document.createElement("div");
+    popupBody.className = "popup-body"
+    let popupBodyText = document.createElement("h3");
+    popupBodyText.innerText = "Edit task below."
+    
+    let popupFooter = document.createElement("div");
+    popupFooter.id = "popup-footer"
+
+    let noteTagInput = document.createElement("input");
+    noteTagInput.id = "edited-tag-input"
+    noteTagInput.value = data[3]
+
+    let textareaInput = document.createElement("textarea");
+    textareaInput.id = "edit-note-input"
+    textareaInput.type = "date"
+    textareaInput.value = data[2]
+
+    let saveButton = document.createElement("button")
+    saveButton.innerHTML = "Save"
+    saveButton.id = ""
+    saveButton.addEventListener("click",function() {
+        saveNoteData(data)
+        closePopup(popupContainer)
+        window.location.reload()
+    })
+
+    
+    popupHeader.append(closePopupButton)
+    popupBody.append(popupBodyText)
+
+    popupFooter.append(noteTagInput)
+    popupFooter.append(textareaInput)
+    popupFooter.append(document.createElement("br"))
+    popup.append(popupHeader)
+    popup.append(popupBody)
+    popup.append(popupFooter)
+    popupFooter.append(saveButton)
+
+    popupContainer.append(popup)
+    centerDiv.append(popupContainer)
+
+    openPopup(popupContainer,popup)
+} //creates a new popup div to edit currently selected task
+
+function saveNoteData(prevData) {    
+    const newDataJSON = {
+        "user":prevData[0],
+        "user id":prevData[1],
+        "note":document.querySelector("#edit-note-input").value,
+        "note_tag":document.querySelector("#edited-tag-input").value,
+    }
+    const newData = `${newDataJSON["user"]},${newDataJSON["user id"]},${newDataJSON["note"]},${newDataJSON["note_tag"]}`
+
+    testSocket(`finished editing note,${prevData},${newData}`)
+    document.querySelector("#edit-note-input").value = ""
+    document.querySelector("#edited-tag-input").value = ""
+} //saves the new note and sends to the cosnumer.py file with data message of finished editing note
+
+function getDaysInMonth(month,year) {
+    // Here January is 1 based
+    //Day 0 is the last day in the previous month
+    return new Date(year, month, 0).getDate();
+    // Here January is 0 based
+    // return new Date(year, month+1, 0).getDate();
+};
+
+function createMonth(monthHolder,dayHolder,tasks) {
+    let centerDiv = document.querySelector("#center")
+    let calendarContainer = document.createElement("div");
+    calendarContainer.id = "calendar-container"
+    let calendarHeader = document.createElement("div");
+    calendarHeader.id = "calendar-header"
+    let prevMonthDiv = document.createElement("div");
+    prevMonthDiv.id = "prev-month"
+    let prevMonthButton = document.createElement("button");
+    prevMonthButton.innerText = "❮"
+    prevMonthDiv.addEventListener("click",function() {
+        console.log("previous month")
+        document.querySelector("#calendar-container").remove()
+        createMonth(monthHolder-1,getDaysInMonth(monthHolder-1,2022),tasks)
+    })
+
+    let currentMonthYear = document.createElement("div");
+    currentMonthYear.id = "current-month-year"
+    currentMonthYear.innerText = `${Months[monthHolder]} 2022`
+
+    let nextMonthDiv = document.createElement("div");
+    nextMonthDiv.id = "next-month"
+    let nextMonthButton = document.createElement("button");
+    nextMonthButton.innerText = "❯"
+    nextMonthDiv.addEventListener("click",function() {
+        console.log("next month")
+        document.querySelector("#calendar-container").remove()
+        createMonth(monthHolder+1,getDaysInMonth(monthHolder+1,2022),tasks)
+    })
+
+    let dayContainer = document.createElement("div");
+    dayContainer.id = "days-container"
+    let ulDays = document.createElement("ul");
+    ulDays.id = "month"
+
+    for (let i=1;i<=dayHolder;i++) {
+        let liDay = document.createElement("li");
+        liDay.id = "day"
+
+        let dayNum = document.createElement("div");
+        dayNum.id = "day-number"
+        dayNum.innerText = i
+        
+        let dayTask = document.createElement("div");
+        dayTask.id = "day-task"
+        for (let key in tasks) {
+            month = key.replace("'","").split("-")
+            day = key.slice(0,-1).split("-")
+            if (i == day[1] &&  Months[monthHolder] == Months[parseInt(month[0])] ) {
+                let task = document.createElement("div");
+                task.innerText = tasks[key]
+                dayTask.append(task)
+            } else {
+                dayNum.innerText = i
+            }
+        } 
+        liDay.append(dayNum)
+        liDay.append(dayTask)
+        ulDays.append(liDay)
+    }
+
+
+    dayContainer.append(ulDays)
+    prevMonthDiv.append(prevMonthButton)
+    nextMonthDiv.append(nextMonthButton)
+    calendarHeader.append(prevMonthDiv)
+    calendarHeader.append(currentMonthYear)
+    calendarHeader.append(nextMonthDiv)
+    calendarContainer.append(calendarHeader)
+    calendarContainer.append(dayContainer)
+    centerDiv.append(calendarContainer)
+}

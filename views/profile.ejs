@@ -15,6 +15,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
+    <!-- ############SIDEBAR###########33 -->
     <div id="sidebar">
         <div id="toggle" onclick="showMobileNav()">
             <span></span>
@@ -43,15 +44,85 @@
             </div>
         </div>
     </div>
+    <!-- ############SIDEBAR###########33 -->
+
     
     <div id="center">
-        <h1>Welcome <%= name %></h1>
-        <br>
-        <button onclick="signOut()">Sign Out</button>
+        <!-- ############NOTES###########33 -->
+        <div id="notes-tags-list">
+        
+            <div id="tag-search-div">
+                <input type="text" id="note-tag-input" placeholder="#TagName" >
+                <button type="submit" id="tag-search">Enter</button>
+            </div>
+    
+            <div id="tag" class="note-tag-div">
+                <input type="radio" name="tag" value="all" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="all">All</label>
+            </div>
+            
+    
+            {% for m in notes_tags %}
+                {% if "#" != m %}
+                    <div id="tag" class="note-tag-div">
+                        <input type="radio" name="tag" value="{{m}}" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="{{m}}">{{m}}</label>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    
+        <div id="notes-container">
+            <button id="create-note">Create Note</button>
+            <ul id="notes-list">
+                <li class="note {{i.note_tag}}">
+                    <pre>Test</pre>
+                </li>
+                {% for i in user_notes %}
+                    {% if i.note_tag != "#" %}
+                        <li class="note {{i.note_tag}}" id="{{i.note_tag}}">
+                            <pre>{{i.note_message}}</pre>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+    
+            <!-- <div id="selected-note-container" class="popup-to-delete">
+                <div id="selected-note">
+                    <div id="close-note">X</div>
+                    <div id="note">
+                        <pre>Testing</pre>
+                    </div>
+                    <div id="selected-note-settings">
+                        <button>Edit</button>
+                        <button>Delete</button>
+                    </div>
+                </div>
+            </div>
+             -->
+    
+            <div id="popup-container">
+                <div class="popup" id="note-popup">
+                    <div class="popup-header"><button>X</button></div>
+                    <div class="popup-body">
+                        <label for="new-note-tag">Tag:</label>
+                        <input type="text" id="new-note-tag" value="#">
+                    </div>
+                    <div class="popup-footer">
+                        <textarea name="new-note" id="new-note" cols="30" rows="10"></textarea>
+                        <br>
+                        <button id="submit-note">Enter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>
 
 <script>
+    for(let i=0;i<=100;i++){
+        displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
+        // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
+    } 
     function onSignIn(googleUser) {
         var profile = googleUser.getBasicProfile();
         // The ID token you need to pass to your backend:
