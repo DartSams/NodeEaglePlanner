@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const port = process.env.PORT || 8000;
-
+const users = {}
 
 //STATIC
 app.use(express.static('public'));
@@ -30,18 +30,20 @@ app.get("/", (requst,response) => {
 
 app.post("/",(req,res) => {
     console.log(req.body)
-    console.log(req.body)
     let username = req.body.username
     let password = req.body.password
-    res.redirect(`/profile/${username}`)
+    let user = req.body.user
+    console.log(user)
+    res.redirect(`/profile/${username}` || `/profile/${user}`)
 })
 
 app.get("/profile/:name", (req,res) => {
     data = {
         route:"profile",
-        name:req.params.name
+        name:req.params.name,
+        token:users["id"]
     }
-    res.render("test2",data)
+    res.render("profile",data)
 })
 
 //App running

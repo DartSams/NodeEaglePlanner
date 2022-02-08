@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,12 +27,108 @@
                     <div id="submit">
                         <a href="">Create Account</a>
                         <input type="submit">
+                        <!-- <button onclick="signOut()">SIgn Out</button> -->
                     </div>
                 </form>
                 <br><br>
-                <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div></button>
+                <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-auto_select="false" data-theme="light"></div></button>
             </div>
         </div>
     </div>
 </body>
+<script>
+    // signOut()
+    //sign into google
+    function onSignIn(googleUser) {
+        signOut()
+        console.log(googleUser)
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile();
+
+
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        // testSocket("Signing In,")
+
+        // document.getElementById("google-signin-button").remove() //removes google signin button when signing into account
+        // //create element using google profile full name
+        // let sidebarButtons = document.getElementById("sidebar-buttons");
+        // let profileDiv = document.createElement("div");
+        // profileDiv.id = "profile-div"
+
+        // let profileUser = document.createElement("p");
+        // profileUser.innerText = profile.getName();
+        // profileUser.id = profile.getId();
+        // profileUser.className = "profile-user"
+
+
+        // let dropdown = document.createElement("div");
+        // dropdown.id = "dropdown"
+        // dropdown.addEventListener("click",function() {
+        //     signOut()
+        // })
+        // let settingsDivContainer = document.createElement("div");
+        // settingsDivContainer.id = "settings-container"
+        // let settingsDiv = document.createElement("div");
+        // settingsDiv.id = "settings"
+        // for (let i = 0;i <= 2;i++) {
+        //     let span = document.createElement("span");
+        //     settingsDiv.appendChild(span)
+        // } //creates settings button
+        // settingsDivContainer.appendChild(settingsDiv)
+        // dropdown.appendChild(settingsDivContainer)
+
+        // let dropdownContent = document.createElement("div");
+        // dropdownContent.id = "dropdown-content"
+        // const dropContentList = {
+        //     "Sign Out":"sign-out",
+        // }
+        // for (const key in dropContentList) {
+        //     let dropdownLink = document.createElement("a");
+        //     dropdownLink.innerText = key
+        //     dropdownLink.id = `${dropContentList[dropdownLink.innerText]},`
+        //     dropdownLink.addEventListener("click",function(){
+        //         console.log(dropdownLink.id)
+        //         testSocket(dropdownLink.id)
+        //     }) //when dropdown item clicked it sends data to backend consumer
+        //     dropdownContent.appendChild(dropdownLink)
+        // } //creates dropdown menu when hovering over settings button
+
+        // profileDiv.append(profileUser)
+        // dropdown.appendChild(dropdownContent)
+        // profileDiv.append(dropdown)
+        // sidebarButtons.append(profileDiv)
+
+        const profileData = {
+            "data message":"sign in",
+            "user":profile.getName(),
+            "ID":profile.getId(),
+            "profile image":profile.getImageUrl(),
+            "email":profile.getEmail(),
+            "token":id_token
+        }
+        $.ajax({
+            url:`/`,
+            type: "POST",
+            data: profileData,
+            traditional: true,
+            success:function(response){
+                window.location = `/profile/${profile.getName()}`
+            },
+            complete:function(){},
+            error:function (document, textStatus, thrownError){
+                alert("error");
+                console.log("error")
+            }
+        }); //sends js dict to django backend view using ajax call
+    }
+    function signOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            auth2.disconnect();
+            // document.location='http://localhost:8000/account/signin/';
+            // window.location.reload()
+        });
+    } //signs out of google account
+</script>
 </html>

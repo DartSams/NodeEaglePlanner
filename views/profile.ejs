@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/css/main.css">
+
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="395831929716-qh9p01m4com4riam46q5bjmk8pvrnqru.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Welcome <%= name %></h1>
+    <!-- <% if(route === "profile"){ %>
+        <p>Welcome to the profile</p>
+    <% } else { %>
+        <p>Welcome Home </p>
+    <% } %> -->
+    <button onclick="signOut()" id=<%= token %>>Sign Out</button>
+    <p><%= token %></p>
+
+</body>
+
+<script>
+    function onSignIn(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        // The ID token you need to pass to your backend:
+        var id_token = googleUser.getAuthResponse().id_token;
+        
+        const profileData = {
+            "data message":"sign in",
+            "user":profile.getName(),
+            "ID":profile.getId(),
+            "profile image":profile.getImageUrl(),
+            "email":profile.getEmail()
+        }
+        $.ajax({
+            url:"/",
+            type: "POST",
+            data: profileData,
+            traditional: true,
+            success:function(response){},
+            complete:function(){},
+            error:function (document, textStatus, thrownError){
+                alert("error");
+                console.log("error")
+            }
+        }); //sends js dict to django backend view using ajax call
+    }
+
+    function signOut() {
+            const profileData = {
+                "data message":"signing out",
+            }
+            $.ajax({
+                url:"/",
+                type: "POST",
+                data: profileData,
+                traditional: true,
+                success:function(response){},
+                complete:function(){},
+                error:function (document, textStatus, thrownError){
+                    alert("error");
+                }
+            }); //sends js dict to django backend view using ajax call
+
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                auth2.disconnect();
+                // document.location='http://localhost:8000/account/signin/';
+                // window.location.reload()
+            });
+            window.location='http://localhost:8000/account/signin/';
+
+
+            document.getElementById("profile-div").remove()
+        } //signs out of google account
+</script>
+</html>
