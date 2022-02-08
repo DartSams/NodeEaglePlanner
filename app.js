@@ -33,8 +33,20 @@ app.post("/",(req,res) => {
     let username = req.body.username
     let password = req.body.password
     let user = req.body.user
-    console.log(user)
+    // let Id = req.body.id
+    // console.log(req.body.id)
+    users[user] = [
+        users["name"] = user || username,
+        users["profile_id"] = req.body.id,
+        users["profile_img"] = req.body.profile_image,
+        users["email"] = req.body.email
+    ]
     res.redirect(`/profile/${username}` || `/profile/${user}`)
+    // if (username) {
+    //     res.redirect(`/profile/${username}`)
+    // } else if (user) {
+    //     `/profile/${user}`
+    // }
 })
 
 app.get("/profile/:name", (req,res) => {
@@ -43,7 +55,7 @@ app.get("/profile/:name", (req,res) => {
         name:req.params.name,
         token:users["id"]
     }
-    res.render("profile",data)
+    res.render("profile",users)
 })
 
 //App running
