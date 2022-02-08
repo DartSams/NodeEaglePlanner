@@ -1,0 +1,36 @@
+*{
+    margin:0
+}
+
+
+#center{
+    background-color: palegreen;
+}
+
+#account-signin{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+label,input,a{
+    font-size: 25px;
+}
+
+a{
+    /* text-decoration: none; */
+    color: black;
+}
+
+#submit{
+    display: flex;
+    justify-content: space-between;
+}
+
+#google-signin-button{
+    position: relative;
+    left:25%
+}
