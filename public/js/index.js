@@ -3,19 +3,8 @@ const settingsDropdownContentList = {
     "Edit":"edit task",
     "Delete":"delete task"
 }
-// const url = "ws://eagleplanner.herokuapp.com/ws/FutureEagles/"
-// const url =  'wss://' + '.herokuapp.com' + '/ws/FutureEagles/'
-// const url = (window.location.protocol === 'https:' ? 'wss' : 'ws') + '://'
-// const url = "wss://" + window.location.host + "/ws/FutureEagles/"
-// var loc = window.location;
-// var wsStart = 'ws://';
-// if (loc.protocol == 'https:') {
-//      wsStart = 'wss://'
-// }
-// // var endpoint = wsStart + 'your_ip_address:port_given_to_daphne_server' + '/ws/home';
-// // For above command, it look like this
-// var endpoint = wsStart + window.location.host + '/ws/FutureEagles/';
-// const socket = new WebSocket(endpoint);
+// const url = "ws://localhost:8000/ws/FutureEagles/"
+// const socket = new WebSocket(url);
 const Months = {
     1:"January",
     2:"February",
@@ -104,26 +93,26 @@ function closePopup (container) {
 
 
 
-socket.onopen = function(event) {
-    socket.send('Thanks for connecting')
-    // for(let i=0;i<=100;i++){
-    //     displayNewNote("lorem ipsum") //test the limits of creating notes using js dom using automatic data of 100 notes
-    //     // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
-    // } 
-} //when page first opens
+// socket.onopen = function(event) {
+//     socket.send('Thanks for connecting')
+//     // for(let i=0;i<=100;i++){
+//     //     displayNewNote("lorem ipsum") //test the limits of creating notes using js dom using automatic data of 100 notes
+//     //     // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
+//     // } 
+// } //when page first opens
 
-socket.onmessage = function(event) {
-    console.log('message is recieved')
-    data = event['data']
-} //when server sends data to frontend
+// socket.onmessage = function(event) {
+//     console.log('message is recieved')
+//     data = event['data']
+// } //when server sends data to frontend
 
-socket.onclose = function(event) {
-    console.log('connection is closed')
-} 
+// socket.onclose = function(event) {
+//     console.log('connection is closed')
+// } 
 
-socket.onerror = function(event) {
-    console.log(event)
-}
+// // socket.onerror = function(event) {
+// //     console.log(event)
+// // }
 
 
 sendTaskData=function(message) {
@@ -337,12 +326,14 @@ function displayNewNote(note,tag) {
         y-=30;
         z-=30
     }
-    let randomColor = `rgb(${x},${y},${z})`
+    let randomColor = `(${x},${y},${z})`
     console.log(note)
     let notesList = document.querySelector("#notes-list")
     let noteItem = document.createElement("li");
     noteItem.className = `note ${tag}`
-    noteItem.style.backgroundColor = `${randomColor}`
+    noteItem.style.cssText = `
+        background-color:${randomColor}
+    `
     let preText = document.createElement("pre");
     preText.innerText = note
 
@@ -563,7 +554,7 @@ function createMonth(monthHolder,dayHolder,tasks) {
                 dayTask.append(task)
             } else {
                 dayNum.innerText = i
-            }
+            } 
         } 
         liDay.append(dayNum)
         liDay.append(dayTask)

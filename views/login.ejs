@@ -58,18 +58,19 @@
             "email":profile.getEmail(),
             "token":id_token
         }
+        console.log(profileData)
         $.ajax({
             url:`/`,
             type: "POST",
             data: profileData,
             traditional: true,
             success:function(response){
-                window.location = `/profile/${profile.getName()}`
+                window.location = `/profile/${profileData.user}/tasks` //not needed on success sends post request to login pages route
             },
             complete:function(){},
             error:function (document, textStatus, thrownError){
                 alert("error");
-                console.log("error")
+                console.log(textStatus)
             }
         }); //sends js dict to django backend view using ajax call
     }

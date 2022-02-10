@@ -21,27 +21,28 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 //mysql connection to google db
-var con = mysql.createConnection({
-    host: "35.222.182.160",
-    user: "root",
-    password: "Dartagnan19@",
-    database: "eagleplanner_db"
-});
+// const con = mysql.createConnection({
+//     host: "35.222.182.160",
+//     user: "root",
+//     password: "Dartagnan19@",
+//     database: "eagleplanner_db"
+// });
 
-con.connect(function(err) {
-    if (err) throw err;
-    con.query("SELECT * FROM FutureEagles_job", function (err, result, fields) {
-        if (err) throw err;
-        console.log(result[2].id);
-        let entry = 2
-        let ID = result[entry].id
-        let user = result[entry].user
-        let task = result[entry].task
-        let due_date = result[entry].due_date
-        let status = result[entry].status
-        let user_id = result[entry].user_id
-    });
-});
+// con.connect(function(err) {
+//     if (err) throw err;
+//     con.query("SELECT * FROM FutureEagles_job", function (err, result, fields) {
+//         if (err) throw err;
+//         // console.log(result[2].id);
+//         let entry = 2
+//         let ID = result[entry].id
+//         let user = result[entry].user
+//         let task = result[entry].task
+//         let due_date = result[entry].due_date
+//         let status = result[entry].status
+//         let user_id = result[entry].user_id
+//     }); //returns all db entries in FutureEagles_job table
+// });
+
 //VIEWS
 app.get("/", (requst,response) => {
     // response.send("hello world")
@@ -58,26 +59,44 @@ app.post("/",(req,res) => {
     let user = req.body.user
     // let Id = req.body.id
     // console.log(req.body.id)
-    users[user] = [
-        users["name"] = user || username,
-        users["profile_id"] = req.body.id,
-        users["profile_img"] = req.body.profile_image,
-        users["email"] = req.body.email
-    ]
-    res.redirect(`/profile/${username}` || `/profile/${user}`)
-    // if (username) {
-    //     res.redirect(`/profile/${username}`)
-    // } else if (user) {
-    //     `/profile/${user}`
-    // }
+    // users[user] = [
+    //     users["name"] = user || username,
+    //     users["profile_id"] = req.body.id || 3434,
+    //     users["profile_img"] = req.body.profile_image,
+    //     users["email"] = req.body.email
+    // ]
+
+    if (user) {
+        console.log("running user function")
+        users[user] = [
+            users["name"] = user || username,
+            users["profile_id"] = req.body.id || 3434, //for now hardcoded to 3434 but setup later get from db the profile_id
+            users["profile_img"] = req.body.profile_image,
+            users["email"] = req.body.email
+        ]
+        res.redirect(`/profile/${user}/user`)
+    } else if (username) {
+        console.log("running username function")
+        users[username] = [
+            users["name"] = username,
+            users["profile_id"] = 3434,
+            // users["profile_img"] = req.body.profile_image,
+            // users["email"] = req.body.email
+        ]
+        res.redirect(`/profile/${username}/tasks`)
+    }
 })
 
-app.get("/profile/:name", (req,res) => {
+app.get("/profile/:name/:tab", (req,res) => {
     data = {
         route:"profile",
         name:req.params.name,
+        tab:req.params.tab,
         token:users["id"]
     }
+    users[req.params.name] =[
+        users["tab"] = req.params.tab
+    ]
     res.render("profile",users)
 })
 
