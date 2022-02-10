@@ -47,7 +47,7 @@
     <!-- ############SIDEBAR###########33 -->
 
     
-    <div id="center">
+    <div id="center" class=<%= tab %>>
         <!-- ############NOTES###########33 -->
         <% if (tab === "notes") {%>
             <div id="notes-tags-list">
@@ -163,7 +163,7 @@
                 </div>
             </div>
         <% } else if (tab === "calendar") {%>
-            <div id="calendar-container" class=<%= tab %>>
+            <div id="calendar-container" >
                 
             </div>
         
@@ -192,10 +192,21 @@
     //     displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
     // } 
     let x = document.querySelector(".calendar")
+    console.log("<%= tab %>")
     let today = new Date()
-    if (x.className == "calendar") {
+    if ("<%= tab %>" == "calendar") {
         createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),{})
     } //after getting all task from db replace {} with that
+    else if ("<%= tab %>" == "notes") {
+        for(let i=0;i<=100;i++){
+            displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
+        } 
+    } else if ("<%= tab %>" == "tasks") {
+        for(let i=0;i<=100;i++){
+        // displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
+            displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
+        } 
+    }
 
 
     function onSignIn(googleUser) {

@@ -326,14 +326,12 @@ function displayNewNote(note,tag) {
         y-=30;
         z-=30
     }
-    let randomColor = `(${x},${y},${z})`
+    let randomColor = `rgb(${x},${y},${z})`
     console.log(note)
     let notesList = document.querySelector("#notes-list")
     let noteItem = document.createElement("li");
     noteItem.className = `note ${tag}`
-    noteItem.style.cssText = `
-        background-color:${randomColor}
-    `
+    noteItem.style.backgroundColor = `${randomColor}`
     let preText = document.createElement("pre");
     preText.innerText = note
 
