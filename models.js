@@ -23,7 +23,7 @@ const con = mysql.createConnection({
 //         if (err) console.log(err);
 //         console.log("Table created");
 //     });
-// });
+// }); //creates tables
 
 // let name = "dart"
 
@@ -37,14 +37,14 @@ deleteUser = (name) => {
 }
 
 
-insertUser = (name) => {
+insertUser = (name,id,image,email) => {
     con.connect(function(err) {
         if (err) console.log(err);
         con.query(`SELECT * FROM EaglePlanner_users WHERE name = '${name}'`,function (err, result, fields) {
             if (err) console.log(err)
             // console.log(result)
             if (result.length == 0) {
-                con.query(`INSERT INTO EaglePlanner_users (name,password_id,image_link,email) VALUES ('${name}','3434','youtube.com','dsams@gmail.com')`,function (err, result, fields) {
+                con.query(`INSERT INTO EaglePlanner_users (name,password_id,image_link,email) VALUES ('${name}','${id}','${image}','${email}')`,function (err, result, fields) {
                     if (err) console.log(err)
                     console.log("Entry created")
                 });
@@ -57,4 +57,44 @@ insertUser = (name) => {
 } //this checks the db for users with a certain name and if found does nothing but if user not found creates new user
 // insertUser("sams") //testing calling arrow function
 
-module.exports = { insertUser,deleteUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
+// let note = con.query("CREATE TABLE EaglePlanner_notes (user VARCHAR(255), id VARCHAR(255), note_message VARCHAR(999), note_tag VARCHAR(50),note_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
+// let tasks = con.query("CREATE TABLE EaglePlanner_tasks (user VARCHAR(255), id VARCHAR(255), task VARCHAR(255), due_date VARCHAR(255), status VARCHAR(20),task_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
+
+
+createNote = (name,id,note_message,note_tag) => {
+    con.connect(function(err) {
+        if (err) console.log(err);
+        con.query(`INSERT INTO EaglePlanner_notes (user,id,note_message,note_tag) VALUES ('${name}','${id}','${note_message}','${note_tag}')`,function (err, result, fields) {
+            if (err) console.log(err)
+            console.log("Entry created")
+        });
+    });
+}
+
+
+createTask = (name,id,task,due_date,status) => {
+    con.connect(function(err) {
+        if (err) console.log(err);
+        con.query(`INSERT INTO EaglePlanner_tasks (user,id,task,due_date,status) VALUES ('${name}','${id}','${task}','${due_date}','${status}')`,function (err, result, fields) {
+            if (err) console.log(err)
+            console.log("Entry created")
+        });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports = { insertUser,deleteUser,createNote,createTask }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")

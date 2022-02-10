@@ -39,18 +39,10 @@ app.get("/", (requst,response) => {
 });
 
 app.post("/",(req,res) => {
-    console.log(req.body)
+    // console.log(req.body)
     let username = req.body.username
     let password = req.body.password
     let user = req.body.user
-    // let Id = req.body.id
-    // console.log(req.body.id)
-    // users[user] = [
-    //     users["name"] = user || username,
-    //     users["profile_id"] = req.body.id || 3434,
-    //     users["profile_img"] = req.body.profile_image,
-    //     users["email"] = req.body.email
-    // ]
 
     if (user) {
         console.log("running user function")
@@ -60,6 +52,7 @@ app.post("/",(req,res) => {
             users["profile_img"] = req.body.profile_image,
             users["email"] = req.body.email
         ]
+        query.insertUser(req.body.user,req.body.id,req.body.profile_image,req.body.email)
         res.redirect(`/profile/${user}/user`)
     } else if (username) {
         console.log("running username function")
