@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require('mysql');
+const query = require("./models") //imports db functions from models.js file
 const app = express();
 const path = require("path");
 const port = process.env.PORT || 8000;

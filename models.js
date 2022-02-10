@@ -8,32 +8,53 @@ const con = mysql.createConnection({
 });
 
 // con.connect(function(err) {
-//     // if (err) throw err;
-//     // con.query("SELECT * FROM FutureEagles_job", function (err, result, fields) {
-//     //     if (err) throw err;
-//     //     // console.log(result[2].id);
-//     //     let entry = 2
-//     //     let ID = result[entry].id
-//     //     let user = result[entry].user
-//     //     let task = result[entry].task
-//     //     let due_date = result[entry].due_date
-//     //     let status = result[entry].status
-//     //     let user_id = result[entry].user_id
-//     // }); //returns all db entries in FutureEagles_job table
-//     // var sql = "CREATE TABLE customers (name VARCHAR(255), address VARCHAR(255))";
 
-//    let tasks = con.query("CREATE TABLE EaglePlanner_tasks (user VARCHAR(255), id VARCHAR(255), task VARCHAR(255), due_date VARCHAR(255), status VARCHAR(20))", function (err, result) {
+//    let tasks = con.query("CREATE TABLE EaglePlanner_tasks (user VARCHAR(255), id VARCHAR(255), task VARCHAR(255), due_date VARCHAR(255), status VARCHAR(20),task_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
 //         if (err) console.log(err);
 //         console.log("Table created");
 //     });
 
-//     let users = con.query("CREATE TABLE EaglePlanner_users (name VARCHAR(255), password_id VARCHAR(255), image_link VARCHAR(255), email VARCHAR(20))", function (err, result) {
+//     let users = con.query("CREATE TABLE EaglePlanner_users (name VARCHAR(255), password_id VARCHAR(255), image_link VARCHAR(255), email VARCHAR(20),user_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
 //         if (err) console.log(err);
 //         console.log("Table created");
 //     });
 
-//     let note = con.query("CREATE TABLE EaglePlanner_notes (user VARCHAR(255), id VARCHAR(255), note_message VARCHAR(999), note_tag VARCHAR(50))", function (err, result) {
+//     let note = con.query("CREATE TABLE EaglePlanner_notes (user VARCHAR(255), id VARCHAR(255), note_message VARCHAR(999), note_tag VARCHAR(50),note_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
 //         if (err) console.log(err);
 //         console.log("Table created");
 //     });
 // });
+
+// let name = "dart"
+
+deleteUser = (name) => {
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(`DELETE FROM EaglePlanner_users WHERE name = '${name}'`, function (err, result, fields) {
+            if (err) throw err;
+        }); //returns all db entries in FutureEagles_job table
+    });
+}
+
+
+insertUser = (name) => {
+    con.connect(function(err) {
+        if (err) console.log(err);
+        con.query(`SELECT * FROM EaglePlanner_users WHERE name = '${name}'`,function (err, result, fields) {
+            if (err) console.log(err)
+            // console.log(result)
+            if (result.length == 0) {
+                con.query(`INSERT INTO EaglePlanner_users (name,password_id,image_link,email) VALUES ('${name}','3434','youtube.com','dsams@gmail.com')`,function (err, result, fields) {
+                    if (err) console.log(err)
+                    console.log("Entry created")
+                });
+            } else if (result) {
+                console.log("Entry already exist") 
+                return
+            }
+        });
+    });
+} //this checks the db for users with a certain name and if found does nothing but if user not found creates new user
+// insertUser("sams") //testing calling arrow function
+
+module.exports = { insertUser,deleteUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
