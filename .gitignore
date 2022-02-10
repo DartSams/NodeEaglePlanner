@@ -1,0 +1,2 @@
+#ignore the heroku clearDB login credentials
+.env
