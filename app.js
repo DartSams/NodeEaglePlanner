@@ -1,9 +1,13 @@
 const express = require("express");
 const mysql = require('mysql');
 const query = require("./models") //imports db functions from models.js file
-const app = express();
+const app = express(); //initializes express app
 const path = require("path");
-const port = process.env.PORT || 8000;
+const http = require('http');
+const server = http.createServer(app); //connects the express app to http
+const { Server } = require("socket.io");
+const io = new Server(server); //connects the http server to a websocket connection
+const port = process.env.PORT || 8000; //set port to a port provided in env variables or set to default 8000
 const users = {}
 
 //STATIC
@@ -38,6 +42,22 @@ app.get("/", (requst,response) => {
     response.render("login",data)
 });
 
+io.on('connection', (socket) => {
+    console.log('Connnection made to profle page');
+    socket.on("testing emit", (data) => {
+        let jsonData = JSON.stringify(data)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+    })
+});
+
+io.on('disconnect', (socket) => {
+    console.log('Connection ended');
+});
+
+io.on('error', (socket) => {
+    console.log('Found error');
+}); 
+
 app.post("/",(req,res) => {
     // console.log(req.body)
     let username = req.body.username
@@ -64,7 +84,7 @@ app.post("/",(req,res) => {
         ]
         res.redirect(`/profile/${username}/tasks`)
     }
-})
+});
 
 app.get("/profile/:name/:tab", (req,res) => {
     data = {
@@ -77,9 +97,14 @@ app.get("/profile/:name/:tab", (req,res) => {
         users["tab"] = req.params.tab
     ]
     res.render("profile",users)
-})
+});
 
 //App running
-app.listen(port, ()=> {
+server.listen(port, ()=> {
     console.log(`App running at http://localhost:${port}`)
-})
+});
+
+//Useful docs
+//https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/Introduction
+//https://socket.io/get-started/chat
+//https://www.npmjs.com/package/mysql || https://stackoverflow.com/questions/9822313/remote-connect-to-cleardb-heroku-database#:~:text=In%20heroku%20website%2C%20go%20to,you%20see%20your%20username%2Fpassword.

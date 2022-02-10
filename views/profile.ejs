@@ -8,11 +8,9 @@
     <link rel="stylesheet" href="/css/profile.css">
     <script src="/js/index.js"></script>
 
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="395831929716-qh9p01m4com4riam46q5bjmk8pvrnqru.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 </head>
 <body>
     <!-- ############SIDEBAR###########33 -->
@@ -27,7 +25,6 @@
             <button id="calendar-switch">Calendar</button>
             <button id="task-switch">Task</button>
             <button id="notes-switch">Notes</button>
-            <!-- <a href="/profile/<%= name %>/notes">Notes</a> -->
             <div id="profile-div">
                 <p class="profile-user" id=<%= profile_id %>><%= name %></p>
                 <div id="dropdown">
@@ -216,5 +213,10 @@
         window.location = "/profile/<%= name %>/notes"
     })
 
+    const socket = io(); //initializes socket io connection and automatically emits connection message
+
+    socket.emit('testing emit', {
+        msg:"test sucsseful"
+    }) //emit json data to backend node under a specific message example <testing emit>
 </script>
 </html>
