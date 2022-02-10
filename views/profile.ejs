@@ -27,6 +27,7 @@
             <button id="calendar-switch">Calendar</button>
             <button id="task-switch">Task</button>
             <button id="notes-switch">Notes</button>
+            <!-- <a href="/profile/<%= name %>/notes">Notes</a> -->
             <div id="profile-div">
                 <p class="profile-user" id=<%= profile_id %>><%= name %></p>
                 <div id="dropdown">
@@ -186,13 +187,6 @@
 </body>
 
 <script>
-    //testing js function to display default data
-    // for(let i=0;i<=100;i++){
-    //     // displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
-    //     displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
-    // } 
-    let x = document.querySelector(".calendar")
-    console.log("<%= tab %>")
     let today = new Date()
     if ("<%= tab %>" == "calendar") {
         createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),{})
@@ -203,64 +197,24 @@
         } 
     } else if ("<%= tab %>" == "tasks") {
         for(let i=0;i<=100;i++){
-        // displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
             displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
         } 
     }
 
+    let calendarSwitch = document.querySelector("#calendar-switch");
+    calendarSwitch.addEventListener("click",function() {
+        window.location = "/profile/<%= name %>/calendar"
+    })
 
-    function onSignIn(googleUser) {
-        var profile = googleUser.getBasicProfile();
-        // The ID token you need to pass to your backend:
-        var id_token = googleUser.getAuthResponse().id_token;
-        
-        const profileData = {
-            "data message":"sign in",
-            "user":profile.getName(),
-            "ID":profile.getId(),
-            "profile image":profile.getImageUrl(),
-            "email":profile.getEmail()
-        }
-        $.ajax({
-            url:"/",
-            type: "POST",
-            data: profileData,
-            traditional: true,
-            success:function(response){},
-            complete:function(){},
-            error:function (document, textStatus, thrownError){
-                alert("error");
-                console.log("error")
-            }
-        }); //sends js dict to django backend view using ajax call
-    }
+    let listSwitch = document.querySelector("#task-switch");
+    listSwitch.addEventListener("click",function() {
+        window.location = "/profile/<%= name %>/tasks"
+    })
 
-    function signOut() {
-            const profileData = {
-                "data message":"signing out",
-            }
-            $.ajax({
-                url:"/",
-                type: "POST",
-                data: profileData,
-                traditional: true,
-                success:function(response){},
-                complete:function(){},
-                error:function (document, textStatus, thrownError){
-                    alert("error");
-                }
-            }); //sends js dict to django backend view using ajax call
+    let notesSwitch = document.querySelector("#notes-switch");
+    notesSwitch.addEventListener("click",function() {
+        window.location = "/profile/<%= name %>/notes"
+    })
 
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                auth2.disconnect();
-                // document.location='http://localhost:8000/account/signin/';
-                // window.location.reload()
-            });
-            window.location='http://localhost:8000/account/signin/';
-
-
-            document.getElementById("profile-div").remove()
-        } //signs out of google account
 </script>
 </html>
