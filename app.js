@@ -7,7 +7,7 @@ const http = require('http');
 const server = http.createServer(app); //connects the express app to http
 const { Server } = require("socket.io");
 const io = new Server(server); //connects the http server to a websocket connection
-const port = process.env.PORT || 8000; //set port to a port provided in env variables or set to default 8000
+const port = process.env.PORT || 5000; //set port to a port provided in env variables or set to default 8000
 const users = {}
 
 //STATIC
@@ -26,12 +26,12 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // mysql connection to google db
-const con = mysql.createConnection({
-    host: "us-cdbr-east-04.cleardb.com",
-    user: "bcc2ec4fcecbe5",
-    password: "cfb6b512",
-    database: "heroku_d10e4ce632a9633"
-});
+// const con = mysql.createConnection({
+//     host: "us-cdbr-east-04.cleardb.com",
+//     user: "bcc2ec4fcecbe5",
+//     password: "cfb6b512",
+//     database: "heroku_d10e4ce632a9633"
+// });
 
 //VIEWS
 app.get("/", (requst,response) => {
@@ -47,6 +47,18 @@ io.on('connection', (socket) => {
     socket.on("testing emit", (data) => {
         let jsonData = JSON.stringify(data)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+    })
+
+    socket.on("add new task", (data) => {
+        let jsonData = JSON.stringify(data)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        query.createTask(data.user,data.user_id,data.task,data.due_date,"active")
+    });
+
+    socket.on("add new note", (data) => {
+        let jsonData = JSON.stringify(data)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        query.createNote(data.user,data.user_id,data.note,data.note_tag)
     })
 });
 

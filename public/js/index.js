@@ -5,6 +5,8 @@ const settingsDropdownContentList = {
 }
 // const url = "ws://localhost:8000/ws/FutureEagles/"
 // const socket = new WebSocket(url);
+const socket = io(); //initializes socket io connection and automatically emits connection message
+
 const Months = {
     1:"January",
     2:"February",
@@ -114,21 +116,39 @@ function closePopup (container) {
 // //     console.log(event)
 // // }
 
+socket.emit('testing emit', {
+    msg:"test sucsseful"
+}) //emit json data to backend node under a specific message example <testing emit>
+
 
 sendTaskData=function(message) {
     let popupContainer = document.querySelector("#popup-container")
     let user = document.querySelector('.profile-user').innerText
     let user_id = document.querySelector('.profile-user').id
     if (message == "add new task") {
-        task=document.querySelector('#new-task').value
+        taskValue=document.querySelector('#new-task').value
         taskDate=document.querySelector('#task-date').value
-        socket.send([message,user,user_id,task,taskDate])
+        // socket.send([message,user,user_id,task,taskDate])
+        socket.emit('add new task', {
+            msg:message,
+            user:user,
+            user_id:user_id,
+            task:taskValue,
+            due_date:taskDate
+        }) //emit json data to backend node under a specific message example <testing emit>
         closePopup(popupContainer)
         displayNewTask(task,taskDate)
     } else if (message == "add new note") {
         let note = document.querySelector("#new-note").value;
         let noteTag = document.querySelector("#new-note-tag").value
-        socket.send([message,user,user_id,note,noteTag])
+        // socket.send([message,user,user_id,note,noteTag])
+        socket.emit('add new note', {
+            msg:message,
+            user:user,
+            user_id:user_id,
+            note:note,
+            note_tag:noteTag
+        }) //emit json data to backend node under a specific message example <testing emit>
         closePopup(popupContainer)
         displayNewNote(note,noteTag)
     }

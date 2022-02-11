@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" href="/css/profile.css">
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
     <script src="/js/index.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    
 </head>
 <body>
     <!-- ############SIDEBAR###########33 -->
@@ -184,6 +185,8 @@
 </body>
 
 <script>
+    let current_user = "<%= name %>"
+    let current_tab = "<%= tab %>"
     let today = new Date()
     if ("<%= tab %>" == "calendar") {
         createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),{})
@@ -213,10 +216,93 @@
         window.location = "/profile/<%= name %>/notes"
     })
 
-    const socket = io(); //initializes socket io connection and automatically emits connection message
+    // const socket = io(); //initializes socket io connection and automatically emits connection message
 
     socket.emit('testing emit', {
         msg:"test sucsseful"
     }) //emit json data to backend node under a specific message example <testing emit>
+
+    if (current_user && current_tab) {
+
+        if (current_tab == "tasks") {
+            let createTask = document.getElementById("create-task");
+            if (createTask) {
+                let popupContainer = document.querySelector("#popup-container")
+                createTask.addEventListener("click",function() {
+                    let popup = popupContainer.children[0]
+                    openPopup(popupContainer,popup)
+                })
+
+                let taskButton = document.getElementById("submit-task")
+                taskButton.addEventListener("click",function() {
+                    sendTaskData("add new task")
+                })
+            } //creates popup for task
+        } else if (current_tab == "notes") {
+            taskDict["notes"] = "test"
+            let createNote = document.querySelector("#create-note");
+            if (createNote) {
+                let popupContainer = document.querySelector("#popup-container")
+                createNote.addEventListener("click",function() {
+                    let popup = popupContainer.children[0]
+                    openPopup(popupContainer,popup)
+                })
+
+                let notesButton = document.getElementById("submit-note")
+                notesButton.addEventListener("click",function() {
+                    sendTaskData("add new note")
+                    // displayNewNotes("cum")
+                    // closePopup(popupContainer)
+                })
+            } //create popup for notes
+
+            let note = document.getElementsByClassName("note")
+            
+            for (let i = 0;i<note.length;i++) {
+                note[i].addEventListener("click",function() {
+                    // console.log(this)
+                    selectNote(this)
+                })
+            }
+
+            let noteItem = document.getElementsByClassName("note")
+            for (let i = 0;i<noteItem.length;i++) {
+                let note = noteItem[i].children[0].innerText
+                let x = Math.floor(Math.random() * 256);
+                let y = 100+ Math.floor(Math.random() * 256);
+                let z = 50+ Math.floor(Math.random() * 256);
+                if (x && y && z > 240) {
+                    x-=20;
+                    y-=30;
+                    z-=30
+                }
+                let randomColor = `rgb(${x},${y},${z})`
+                noteItem[i].style.backgroundColor = `${randomColor}`
+            } //generates a random color not white for all li notes
+
+            let searchTagButton = document.querySelector("#tag-search");
+            searchTagButton.addEventListener("click",function() {
+                let searchTag = document.querySelector("#note-tag-input");
+                // console.log(searchTag.value)
+                displayTaggedNotes(searchTag.value)
+                document.querySelector("#note-tag-input").value = ""
+            })
+        } else if (current_tab == "calendar") {
+            createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),taskDict)
+            // for (let i = 1;i<=12;i++) {
+            //     console.log(getDaysInMonth(i,2022))
+            // } //returns the max number of days in all 12 months
+        }
+        
+        
+        if (document.querySelector("#popup-container")) {
+            let closePopupButton = document.querySelector(".popup-header").children[0]
+            closePopupButton.addEventListener("click",function() {
+            let popupContainer = document.querySelector("#popup-container")
+            closePopup(popupContainer)
+        }) //closes popup
+        }
+        
+    }
 </script>
 </html>
