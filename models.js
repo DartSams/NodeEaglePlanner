@@ -100,6 +100,26 @@ showUsers = () =>{
     }); //returns all db entries in FutureEagles_job table
 }
 
+editTask = (original_task,original_date,original_status,new_task,new_date,new_status,user,id) => {
+    con.query("UPDATE EaglePlanner_tasks SET task = ? , due_date = ? , status = ? WHERE task = ? AND due_date = ? AND status = ? AND user = ? AND id = ?",[original_task,original_date,original_status,new_task,new_date,new_status,user,id], function (err, result, fields) {
+        if (err) throw err;
+        console.log(result)
+    }); //returns all db entries in FutureEagles_job table
+
+    // con.query("UPDATE EaglePlanner_tasks SET task = ? , due_date = ? , status = ? WHERE task = ? AND due_date = ? AND status = ? ",[original_task,original_date,"gilfoyle","undefined","undefined","active"], function (err, result, fields) {
+    //     if (err) throw err;
+    //     console.log(result)
+    // }); //returns all db entries in FutureEagles_job table
+}
+
+deleteTask = (task,status,due_date,id) => {
+    // console.log(task,status,due_date,id)
+    con.query("DELETE FROM EaglePlanner_tasks  WHERE task = ? AND status = ? AND due_date = ? AND id = ?",[task,status,due_date,id], function (err, result, fields) {
+        if (err) throw err;
+        console.log(result)
+    }); //queries db for a specific note and deletes it
+}
+
 editNote = (new_note,new_tag,user,id,original_note,original_tag) => {
     console.log(new_note)
     console.log(new_tag)
@@ -118,5 +138,5 @@ deleteNote = (user,id,note) => {
 }
 
 
-module.exports = { insertUser,deleteUser,createNote,createTask,editNote,deleteNote }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
+module.exports = { insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
 // module.exports = con;

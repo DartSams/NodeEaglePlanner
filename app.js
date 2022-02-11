@@ -61,6 +61,24 @@ io.on('connection', (socket) => {
         query.createNote(data.user,data.user_id,data.note,data.note_tag)
     });
 
+    socket.on("finished editing task",data => {
+        let jsonData = JSON.stringify(data)
+        // (user,id,task,due_date,status)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        query.editTask(data.original_task,data.original_date,data.original_status,data.new_task,data.new_date,data.new_status,data.user,data.id)
+        // console.log(data.new_note)
+        // query.editNote(data.new_note,data.new_tag,data.user,data.id,data.original_note,data.original_tag)
+        // [new_note,new_tag,user,id,original_note,original_tag]
+    });
+
+    socket.on("delete task",data => {
+        let jsonData = JSON.stringify(data)
+        // task,status,due_date,user,id
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        console.log(data.task)
+        query.deleteTask(data.task,data.status,data.due_date,data.id)
+    });
+
     socket.on("finished editing note",data => {
         let jsonData = JSON.stringify(data)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)

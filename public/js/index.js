@@ -95,30 +95,9 @@ function closePopup (container) {
 
 
 
-// socket.onopen = function(event) {
-//     socket.send('Thanks for connecting')
-//     // for(let i=0;i<=100;i++){
-//     //     displayNewNote("lorem ipsum") //test the limits of creating notes using js dom using automatic data of 100 notes
-//     //     // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
-//     // } 
-// } //when page first opens
-
-// socket.onmessage = function(event) {
-//     console.log('message is recieved')
-//     data = event['data']
-// } //when server sends data to frontend
-
-// socket.onclose = function(event) {
-//     console.log('connection is closed')
-// } 
-
-// // socket.onerror = function(event) {
-// //     console.log(event)
-// // }
-
-socket.emit('testing emit', {
-    msg:"test sucsseful"
-}) //emit json data to backend node under a specific message example <testing emit>
+// socket.emit('testing emit', {
+//     msg:"test sucsseful"
+// }) //emit json data to backend node under a specific message example <testing emit>
 
 
 sendTaskData=function(message) {
@@ -137,12 +116,12 @@ sendTaskData=function(message) {
                 user_id:user_id,
                 task:taskValue,
                 due_date:taskDate
-            }) //emit json data to backend node under a specific message example <testing emit>
+            }) //creates new entry in task table
           } else {
             console.log(socket)
           }
         closePopup(popupContainer)
-        displayNewTask(task,taskDate)
+        displayNewTask(taskValue,taskDate)
     } else if (message == "add new note") {
         let note = document.querySelector("#new-note").value;
         let noteTag = document.querySelector("#new-note-tag").value
@@ -171,7 +150,14 @@ testSocket = function(data){
     let splitData = data.split(",")
     if (splitData[0] == "delete task") {
         console.log("deleting task")
+        console.log(splitData)
         document.querySelector(`#${splitData[1]}`).remove()
+        socket.emit("delete task",{
+            task:splitData[1],
+            status:splitData[2],
+            due_date:splitData[3],
+            id:splitData[4]
+        })
     } else if (splitData[0] == "edit task") {
         editTaskPopup(splitData)
     } else if (splitData[0] == "finished editing note") {
@@ -191,10 +177,11 @@ testSocket = function(data){
             id:splitData[2],
             note:splitData[3]
         })
-    }
+    } 
 } //sends data to consumer.py for db queries
 
 function displayNewTask(task,taskDate) {
+    // console.log(task)
     let ul = document.querySelector("#list-container")
     let li = document.createElement("li");
     let profile = document.querySelector(".profile-user")
@@ -231,7 +218,8 @@ function displayNewTask(task,taskDate) {
     for (const key in settingsDropdownContentList) {
         let dropdownLink = document.createElement("a");
         dropdownLink.innerText = key
-        dropdownLink.id = `${settingsDropdownContentList[dropdownLink.innerText]},${task},${profile.id}` //sets dropdown item element id to object key and gets the current list item index
+        dropdownLink.id = `${settingsDropdownContentList[dropdownLink.innerText]},${task},${statusDiv.innerText},${dateDiv.innerText},${profile.id}` //sets dropdown item element id to object key and gets the current list item index
+        // console.log(dropdownLink.id)
         dropdownLink.addEventListener("click",function(){
             console.log(dropdownLink.id)
             testSocket(dropdownLink.id) 
@@ -247,16 +235,18 @@ function displayNewTask(task,taskDate) {
 } //apends new task to task container
 
 function editTaskPopup(data) {
-    console.log(data)
-    socket.emit('testing emit', {
-        msg:data
-    }) //emit json data to backend node under a specific message example <testing emit>
+    // console.log(data)
+    // socket.emit('testing emit', {
+    //     msg:data
+    // }) //emit json data to backend node under a specific message example <testing emit>
     const prevData = `${data[1]},${data[2]},${data[3]},${data[4]},${data[5]}`
+    // console.log(prevData)
     const splitPrevData = prevData.split(",")
+    console.log(splitPrevData)
 
     let centerDiv = document.querySelector("#center")
 
-    let popupContainer = document.createElement("div");;
+    let popupContainer = document.createElement("div");
     popupContainer.id = "popup-container"
     popupContainer.className = "popup-to-delete"
 
@@ -286,7 +276,7 @@ function editTaskPopup(data) {
     let duedateInput = document.createElement("input");
     duedateInput.id = "task-date-input"
     duedateInput.type = "date"
-    duedateInput.value = splitPrevData[1]
+    duedateInput.value = splitPrevData[2]
 
     let statusInputActive = document.createElement("input");
     statusInputActive.type = "radio"
@@ -306,14 +296,15 @@ function editTaskPopup(data) {
     nonactiveLabel.innerText = "deactivate"
     nonactiveLabel.htmlFor = "non active"
 
-    if (splitPrevData[2] == "active") {
+    if (splitPrevData[1] == "active") {
         statusInputActive.checked = true
-    } else if (splitPrevData[2] == "non active") {
+    } else if (splitPrevData[1] == "non active") {
         statusInputNonActive.checked = true
     }
 
     let saveButton = document.createElement("button")
     saveButton.innerHTML = "Save"
+    // console.log(splitPrevData)
     saveButton.addEventListener("click",function() {
         saveData(splitPrevData)
         closePopup(popupContainer)
@@ -357,14 +348,28 @@ function saveData(splitPrevData) {
     }
     const newDataJSON = {
         "task":document.querySelector("#new-task-input").value,
-        "due date":document.querySelector("#task-date-input").value,
+        "due_date":document.querySelector("#task-date-input").value,
         "status":selectedSize,
         "user":splitPrevData[4],
         "user id":splitPrevData[5],
     }
     const newData = `${newDataJSON["task"]},${newDataJSON["due date"]},${selectedSize},${splitPrevData[3]},${splitPrevData[4]}`
-
-    testSocket(`finished editing task,${splitPrevData},${newData}`)
+    console.log(newData)
+    // testSocket(`finished editing task,${splitPrevData},${newData}`)
+    socket.emit("finished editing task",{
+        // msg:newData,
+        original_task:splitPrevData[0],
+        original_date:splitPrevData[1],
+        original_status:splitPrevData[2],
+        user:splitPrevData[3],
+        id:splitPrevData[4],
+        // new_task:newData[0],
+        // new_date:newData[1],
+        // new_status:newData[2],
+        new_task:newDataJSON.task,
+        new_date:newDataJSON.due_date,
+        new_status:newDataJSON.status
+    })
     document.querySelector("#new-task-input").value = ""
     document.querySelector("#task-date-input").value = ""
 } //sends data to testSocket function with data message of finished editing task so it will send data to consumer.py file for db query to change task entry
