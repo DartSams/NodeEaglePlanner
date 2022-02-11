@@ -129,39 +129,68 @@ sendTaskData=function(message) {
         taskValue=document.querySelector('#new-task').value
         taskDate=document.querySelector('#task-date').value
         // socket.send([message,user,user_id,task,taskDate])
-        socket.emit('add new task', {
-            msg:message,
-            user:user,
-            user_id:user_id,
-            task:taskValue,
-            due_date:taskDate
-        }) //emit json data to backend node under a specific message example <testing emit>
+
+        if (socket.connected){
+            socket.emit('add new task', {
+                msg:message,
+                user:user,
+                user_id:user_id,
+                task:taskValue,
+                due_date:taskDate
+            }) //emit json data to backend node under a specific message example <testing emit>
+          } else {
+            console.log(socket)
+          }
         closePopup(popupContainer)
         displayNewTask(task,taskDate)
     } else if (message == "add new note") {
         let note = document.querySelector("#new-note").value;
         let noteTag = document.querySelector("#new-note-tag").value
         // socket.send([message,user,user_id,note,noteTag])
-        socket.emit('add new note', {
-            msg:message,
-            user:user,
-            user_id:user_id,
-            note:note,
-            note_tag:noteTag
-        }) //emit json data to backend node under a specific message example <testing emit>
+        if (socket.connected){
+            socket.emit('add new note', {
+                msg:message,
+                user:user,
+                user_id:user_id,
+                note:note,
+                note_tag:noteTag
+            }) //emit json data to backend node under a specific message example <testing emit>
+          } else {
+            console.log(socket)
+          }
         closePopup(popupContainer)
         displayNewNote(note,noteTag)
     }
 }
 
 testSocket = function(data){
-    socket.send(data)
+    // socket.send(data)
+    // socket.emit("finished editing note",{
+    //     msg:data
+    // })
     let splitData = data.split(",")
     if (splitData[0] == "delete task") {
         console.log("deleting task")
         document.querySelector(`#${splitData[1]}`).remove()
     } else if (splitData[0] == "edit task") {
         editTaskPopup(splitData)
+    } else if (splitData[0] == "finished editing note") {
+        socket.emit("finished editing note",{
+            msg:splitData[0],
+            user:splitData[1],
+            id:splitData[2],
+            original_note:splitData[3],
+            original_tag:splitData[4],
+            new_note:splitData[7],
+            new_tag:splitData[8]
+        })
+    } else if (splitData[0] == "delete note") {
+        socket.emit("delete note",{
+            msg:splitData[0],
+            user:splitData[1],
+            id:splitData[2],
+            note:splitData[3]
+        })
     }
 } //sends data to consumer.py for db queries
 
@@ -218,6 +247,10 @@ function displayNewTask(task,taskDate) {
 } //apends new task to task container
 
 function editTaskPopup(data) {
+    console.log(data)
+    socket.emit('testing emit', {
+        msg:data
+    }) //emit json data to backend node under a specific message example <testing emit>
     const prevData = `${data[1]},${data[2]},${data[3]},${data[4]},${data[5]}`
     const splitPrevData = prevData.split(",")
 
@@ -419,7 +452,7 @@ function selectNote(element) {
         "note":pre.innerHTML,
     }
     deleteNote.addEventListener("click",function() {
-        testSocket(`delete note,${newDataJSON["user"]},${newDataJSON["user id"]},${newDataJSON["note"].innerHTML}`)
+        testSocket(`delete note,${newDataJSON["user"]},${newDataJSON["user id"]},${pre.innerHTML}`)
         element.remove()
         closePopup(selectedNoteContainer)
     })

@@ -7,7 +7,7 @@ const http = require('http');
 const server = http.createServer(app); //connects the express app to http
 const { Server } = require("socket.io");
 const io = new Server(server); //connects the http server to a websocket connection
-const port = process.env.PORT || 5000; //set port to a port provided in env variables or set to default 8000
+const port = process.env.PORT || 8000; //set port to a port provided in env variables or set to default 8000
 const users = {}
 
 //STATIC
@@ -43,7 +43,7 @@ app.get("/", (requst,response) => {
 });
 
 io.on('connection', (socket) => {
-    console.log('Connnection made to profle page');
+    console.log('Connnection made to profle page javascript file');
     socket.on("testing emit", (data) => {
         let jsonData = JSON.stringify(data)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
@@ -60,14 +60,34 @@ io.on('connection', (socket) => {
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         query.createNote(data.user,data.user_id,data.note,data.note_tag)
     })
+
+    socket.on("finished editing note",data => {
+        let jsonData = JSON.stringify(data)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        console.log(data.new_note)
+        query.editNote(data.new_note,data.new_tag,data.user,data.id,data.original_note,data.original_tag)
+        // [new_note,new_tag,user,id,original_note,original_tag]
+    })
+
+    socket.on("delete note",data => {
+        let jsonData = JSON.stringify(data)
+        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        console.log(data.new_note)
+        query.deleteNote(data.user,data.id,data.note)
+        // [new_note,new_tag,user,id,original_note,original_tag]
+    })
 });
 
 io.on('disconnect', (socket) => {
     console.log('Connection ended');
 });
 
-io.on('error', (socket) => {
-    console.log('Found error');
+io.on('connect_error', (socket) => {
+    console.log(socket);
+}); 
+
+io.on('connect_failed', (socket) => {
+    console.logs(socket);
 }); 
 
 app.post("/",(req,res) => {

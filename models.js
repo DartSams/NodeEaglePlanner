@@ -4,9 +4,21 @@ const con = mysql.createConnection({
     host: "us-cdbr-east-04.cleardb.com",
     user: "bcc2ec4fcecbe5",
     password: "cfb6b512",
-    database: "heroku_d10e4ce632a9633"
+    database: "heroku_d10e4ce632a9633",
 });
 
+// const mysql = require("mysql");    
+// // const dbConfig = require("../config/db.config.js");
+    
+// const con = mysql.createPool({
+//     connectionLimit : 10,
+//     host: "us-cdbr-east-04.cleardb.com",
+//     user: "bcc2ec4fcecbe5",
+//     password: "cfb6b512",
+//     database: "heroku_d10e4ce632a9633"
+// });
+
+// module.exports = con;
 // con.connect(function(err) {
 
 //    let tasks = con.query("CREATE TABLE EaglePlanner_tasks (user VARCHAR(255), id VARCHAR(255), task VARCHAR(255), due_date VARCHAR(255), status VARCHAR(20),task_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
@@ -73,28 +85,38 @@ createNote = (name,id,note_message,note_tag) => {
 
 
 createTask = (name,id,task,due_date,status) => {
-    con.connect(function(err) {
-        if (err) console.log(err);
-        con.query(`INSERT INTO EaglePlanner_tasks (user,id,task,due_date,status) VALUES ('${name}','${id}','${task}','${due_date}','${status}')`,function (err, result, fields) {
-            if (err) console.log(err)
-            console.log("Entry created")
-        });
-    });
+    con.query(`INSERT INTO EaglePlanner_tasks (user,id,task,due_date,status) VALUES (?,?,?,?,?)`,[`${name}`,`${id}`,`${task}`,`${due_date}`,`${status}`],function (error, result, fields) {
+        // if (error) console.log(error)
+        console.log("Entry created")
+    }); //uses escaping to prevent sql injections
 }
 
 
 
+showUsers = () =>{
+    con.query("SELECT * FROM EaglePlanner_users", function (err, result, fields) {
+        if (err) throw err;
+        console.log(result)
+    }); //returns all db entries in FutureEagles_job table
+}
 
+editNote = (new_note,new_tag,user,id,original_note,original_tag) => {
+    console.log(new_note)
+    console.log(new_tag)
+    console.log(original_note)
+    con.query("UPDATE EaglePlanner_notes SET note_message = ? , note_tag = ? WHERE note_message = ? AND id = ? AND note_tag = ?",[new_note,new_tag,original_note,id,original_tag], function (err, result, fields) {
+        if (err) throw err;
+        console.log(result)
+    }); //queries db for a specific note and updates it to a new note_message and note_tag
+}
 
+deleteNote = (user,id,note) => {
+    con.query("DELETE FROM EaglePlanner_notes  WHERE note_message = ? AND user = ? AND id = ?",[note,user,id], function (err, result, fields) {
+        if (err) throw err;
+        console.log(result)
+    }); //queries db for a specific note and deletes it
+}
 
-
-
-
-
-
-
-
-
-
-
-module.exports = { insertUser,deleteUser,createNote,createTask }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
+q
+module.exports = { insertUser,deleteUser,createNote,createTask,editNote,deleteNote }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
+// module.exports = con;

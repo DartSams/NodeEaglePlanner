@@ -193,7 +193,7 @@
     } //after getting all task from db replace {} with that
     else if ("<%= tab %>" == "notes") {
         for(let i=0;i<=100;i++){
-            displayNewNote("lorem ipsum","test") //test the limits of creating notes using js dom using automatic data of 100 notes
+            displayNewNote(0,"test") //test the limits of creating notes using js dom using automatic data of 100 notes
         } 
     } else if ("<%= tab %>" == "tasks") {
         for(let i=0;i<=100;i++){
@@ -213,14 +213,28 @@
 
     let notesSwitch = document.querySelector("#notes-switch");
     notesSwitch.addEventListener("click",function() {
-        window.location = "/profile/<%= name %>/notes"
+        // window.location = "/profile/<%= name %>/notes"
+        $.ajax({
+            url:`/`,
+            type: "get",
+            // data: profileData,
+            traditional: true,
+            success:function(response){
+                window.location = `/profile/<%= name %>/notes` //not needed on success sends post request to login pages route
+            },
+            complete:function(){},
+            error:function (document, textStatus, thrownError){
+                alert("error");
+                console.log(textStatus)
+            }
+        }); //sends js dict to django backend view using ajax call
     })
 
     // const socket = io(); //initializes socket io connection and automatically emits connection message
 
-    socket.emit('testing emit', {
-        msg:"test sucsseful"
-    }) //emit json data to backend node under a specific message example <testing emit>
+    // socket.emit('testing emit', {
+    //     msg:"test sucsseful"
+    // }) //emit json data to backend node under a specific message example <testing emit>
 
     if (current_user && current_tab) {
 
@@ -239,7 +253,7 @@
                 })
             } //creates popup for task
         } else if (current_tab == "notes") {
-            taskDict["notes"] = "test"
+            // taskDict["notes"] = "test"
             let createNote = document.querySelector("#create-note");
             if (createNote) {
                 let popupContainer = document.querySelector("#popup-container")
@@ -302,7 +316,6 @@
             closePopup(popupContainer)
         }) //closes popup
         }
-        
-    }
+    }    
 </script>
 </html>
