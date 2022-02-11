@@ -117,6 +117,6 @@ deleteNote = (user,id,note) => {
     }); //queries db for a specific note and deletes it
 }
 
-q
+
 module.exports = { insertUser,deleteUser,createNote,createTask,editNote,deleteNote }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
 // module.exports = con;
