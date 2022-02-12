@@ -157,6 +157,7 @@ testSocket = function(data){
             due_date:splitData[2],
             id:splitData[5]
         })
+        document.querySelector(`#${splitData[1]}`).remove() //removes the task element in list-container with the id of task name
     } else if (splitData[0] == "edit task") {
         editTaskPopup(splitData)
     } else if (splitData[0] == "finished editing note") {
@@ -354,7 +355,6 @@ function saveData(splitPrevData) {
     const newData = `${newDataJSON["task"]},${newDataJSON["due date"]},${selectedSize},${splitPrevData[3]},${splitPrevData[4]}`
     console.log(newData)
     // testSocket(`finished editing task,${splitPrevData},${newData}`)
-    // query.editTask(data.original_task,data.original_date,data.original_status,data.new_task,data.new_date,data.new_status,data.user,data.id)
 
     socket.emit("finished editing task",{
         // msg:splitPrevData,
