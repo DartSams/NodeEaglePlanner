@@ -54,21 +54,21 @@ io.on('connection', (socket) => {
 
     socket.on("finished editing task",data => {
         let jsonData = JSON.stringify(data)
-        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
+        console.log(`Recieved socket data from frontend saying EDITING TASK: ${jsonData}`)
         query.editTask(data.original_task,data.original_date,data.original_status,data.new_task,data.new_date,data.new_status,data.user,data.id)
     });
 
     socket.on("delete task",data => {
         let jsonData = JSON.stringify(data)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
-        console.log(data.task)
+        console.log(data)
         query.deleteTask(data.task,data.status,data.due_date,data.id)
     });
 
     socket.on("finished editing note",data => {
         let jsonData = JSON.stringify(data)
-        console.log(`Recieved socket data from frontend saying: ${jsonData}`)
-        console.log(data.new_note)
+        console.log(`Recieved socket data from frontend saying EDITING NOTE: ${jsonData}`)
+        console.log(data)
         query.editNote(data.new_note,data.new_tag,data.user,data.id,data.original_note,data.original_tag)
     });
 

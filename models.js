@@ -101,15 +101,10 @@ showUsers = () =>{
 }
 
 editTask = (original_task,original_date,original_status,new_task,new_date,new_status,user,id) => {
-    con.query("UPDATE EaglePlanner_tasks SET task = ? , due_date = ? , status = ? WHERE task = ? AND due_date = ? AND status = ? AND user = ? AND id = ?",[original_task,original_date,original_status,new_task,new_date,new_status,user,id], function (err, result, fields) {
+    con.query("UPDATE EaglePlanner_tasks SET task = ? , due_date = ? , status = ? WHERE task = ? AND due_date = ? AND status = ? AND user = ? AND id = ?",[new_task,new_date,new_status,original_task,original_date,original_status,user,id], function (err, result, fields) {
         if (err) throw err;
         console.log(result)
     }); //returns all db entries in FutureEagles_job table
-
-    // con.query("UPDATE EaglePlanner_tasks SET task = ? , due_date = ? , status = ? WHERE task = ? AND due_date = ? AND status = ? ",[original_task,original_date,"gilfoyle","undefined","undefined","active"], function (err, result, fields) {
-    //     if (err) throw err;
-    //     console.log(result)
-    // }); //returns all db entries in FutureEagles_job table
 }
 
 deleteTask = (task,status,due_date,id) => {

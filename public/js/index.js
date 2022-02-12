@@ -151,12 +151,11 @@ testSocket = function(data){
     if (splitData[0] == "delete task") {
         console.log("deleting task")
         console.log(splitData)
-        document.querySelector(`#${splitData[1]}`).remove()
         socket.emit("delete task",{
             task:splitData[1],
-            status:splitData[2],
-            due_date:splitData[3],
-            id:splitData[4]
+            status:splitData[3],
+            due_date:splitData[2],
+            id:splitData[5]
         })
     } else if (splitData[0] == "edit task") {
         editTaskPopup(splitData)
@@ -276,7 +275,7 @@ function editTaskPopup(data) {
     let duedateInput = document.createElement("input");
     duedateInput.id = "task-date-input"
     duedateInput.type = "date"
-    duedateInput.value = splitPrevData[2]
+    duedateInput.value = splitPrevData[1]
 
     let statusInputActive = document.createElement("input");
     statusInputActive.type = "radio"
@@ -296,9 +295,9 @@ function editTaskPopup(data) {
     nonactiveLabel.innerText = "deactivate"
     nonactiveLabel.htmlFor = "non active"
 
-    if (splitPrevData[1] == "active") {
+    if (splitPrevData[2] == "active") {
         statusInputActive.checked = true
-    } else if (splitPrevData[1] == "non active") {
+    } else if (splitPrevData[2] == "non active") {
         statusInputNonActive.checked = true
     }
 
@@ -337,7 +336,6 @@ function editTaskPopup(data) {
 } //creates a new popup div to edit currently selected task
 
 function saveData(splitPrevData) {
-
     const radioButtons = document.querySelectorAll("input[name='status']");
     let selectedSize;
     for (const radioButton of radioButtons) {
@@ -350,25 +348,27 @@ function saveData(splitPrevData) {
         "task":document.querySelector("#new-task-input").value,
         "due_date":document.querySelector("#task-date-input").value,
         "status":selectedSize,
-        "user":splitPrevData[4],
-        "user id":splitPrevData[5],
+        "user":splitPrevData[3],
+        "user id":splitPrevData[4],
     }
     const newData = `${newDataJSON["task"]},${newDataJSON["due date"]},${selectedSize},${splitPrevData[3]},${splitPrevData[4]}`
     console.log(newData)
     // testSocket(`finished editing task,${splitPrevData},${newData}`)
+    // query.editTask(data.original_task,data.original_date,data.original_status,data.new_task,data.new_date,data.new_status,data.user,data.id)
+
     socket.emit("finished editing task",{
-        // msg:newData,
+        // msg:splitPrevData,
         original_task:splitPrevData[0],
         original_date:splitPrevData[1],
         original_status:splitPrevData[2],
-        user:splitPrevData[3],
-        id:splitPrevData[4],
         // new_task:newData[0],
         // new_date:newData[1],
         // new_status:newData[2],
         new_task:newDataJSON.task,
         new_date:newDataJSON.due_date,
-        new_status:newDataJSON.status
+        new_status:newDataJSON.status,
+        user:splitPrevData[3],
+        id:splitPrevData[4],
     })
     document.querySelector("#new-task-input").value = ""
     document.querySelector("#task-date-input").value = ""
