@@ -102,11 +102,11 @@ app.get("/", (requst,response) => {
 });
 
 app.get("/test", (req,res) => {
-    con.query("SELECT * FROM EaglePlanner_tasks ", function (err, result, fields) {
+    con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[3434], function (err, result, fields) {
         if (err) {
            //
         }
-        console.log(result[19])
+        console.log(result)
         res.render("test",{data:result})
     }); 
 })
@@ -137,7 +137,7 @@ app.post("/",(req,res) => {
             users["profile_img"] = req.body.profile_image,
             users["email"] = req.body.email
         ]
-        res.redirect(`/profile/${username}/tasks`)
+        res.redirect(`/profile/${username}/test-task`)
     }
 });
 
@@ -145,11 +145,13 @@ app.get("/profile/:name/:tab", (req,res) => {
     users[req.params.name] =[
         users["tab"] = req.params.tab
     ]
-    con.query("SELECT * FROM EaglePlanner_users WHERE name = ?",["sams"], function (err, result, fields) {
+    
+    con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
         if (err) {
            //
         }
-        res.render("profile",{user:users,data:result[0]})
+        // console.log(result[19])
+        res.render("profile",{user:users,data:result})
     }); 
 });
 

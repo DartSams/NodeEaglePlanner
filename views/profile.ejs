@@ -27,7 +27,7 @@
             <button id="task-switch">Task</button>
             <button id="notes-switch">Notes</button>
             <div id="profile-div">
-                <p class="profile-user" id=<%= user.profile_id %>><%= user.name %></p>
+                <p class="profile-user" id="<%= user.profile_id %>"><%= user.name %></p>
                 <div id="dropdown">
                     <div id="settings-container">
                         <div id="settings">
@@ -113,54 +113,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        <% } else if (user.tab === "tasks") {%>
-            <ul id="list-container">
-                <button id="create-task">Create new Task</button>
-                <div id="column-titles">
-                    <p>Task</p>
-                    <p>Due Date</p>
-                    <p>Status</p>
-                    <p>Edit</p>
-                </div>
-        
-                {% for i in user_task %}
-                    {% if "default" == i.task %}
-                    {% else %}
-                        <li id="{{i.task}}">
-                            <div id="task">{{i.task}}</div>
-                            <div id="end-date">{{i.due_date}}</div>
-                            <div id="status">{{i.status}}</div>
-                            <div id="dropdown">
-                                <div id="settings-container">
-                                    <div id="settings">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                </div>
-                                <div id="dropdown-content">
-                                    <a onclick="testSocket(id)" id="edit task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Edit</a>
-                                    <a onclick="testSocket(id)" id="delete task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Delete</a>
-                                </div>
-                            </div>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        
-            <div id="popup-container">
-                <div class="popup" id="list-popup">
-                    <div class="popup-header"><button>X</button></div>
-                    <div class="popup-body"><h3>Please describe the task below.</h3></div>
-                    <div class="popup-footer">
-                        <input type="text" placeholder="Task..." name="task" id="new-task">
-                        <input type="date" name="task-date" id="task-date">
-                        <br>
-                        <button id="submit-task" >Enter</button>
-                    </div>
-                </div>
-            </div>
+            </div>           
         <% } else if (user.tab === "calendar") {%>
             <div id="calendar-container" >
                 
@@ -180,15 +133,58 @@
                     </div>
                 </div>
             </div>
+        <% } else if (user.tab === "tasks") {%>
+            <% allTask = JSON.parse(JSON.stringify(data)) %>
+            <ul id="list-container">
+                <button id="create-task">Create new Task</button>
+                <div id="column-titles">
+                    <p>Task</p>
+                    <p>Due Date</p>
+                    <p>Status</p>
+                    <p>Edit</p>
+                </div>
+
+                <% for (let x in allTask){ %>
+                    <li id="<%= allTask[x]['task'] %>">
+                        <div id="task"><%= allTask[x]['task'] %></div>
+                        <div id="end-date"><%= allTask[x]['due_date'] %></div>
+                        <div id="status"><%= allTask[x]['status'] %></div>
+                        <div id="dropdown">
+                            <div id="settings-container">
+                                <div id="settings">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                            <div id="dropdown-content">
+                                <a onclick="testSocket(id)" id="edit task,<%= allTask[x]['task'] %>,<%= allTask[x]['due_date'] %>,<%= allTask[x]['status'] %>,<%= user.name %>,<%= user.profile_id %>">Edit</a>
+                                <a onclick="testSocket(id)" id="delete task,<%= allTask[x]['task'] %>,<%= allTask[x]['due_date'] %>,<%= allTask[x]['status'] %>,<%= user.name %>,<%= user.profile_id %>">Delete</a>
+                            </div>
+                        </div>
+                    </li>
+                <% } %>
+            </ul>
+
+            <div id="popup-container">
+                <div class="popup" id="list-popup">
+                    <div class="popup-header"><button>X</button></div>
+                    <div class="popup-body"><h3>Please describe the task below.</h3></div>
+                    <div class="popup-footer">
+                        <input type="text" placeholder="Task..." name="task" id="new-task">
+                        <input type="date" name="task-date" id="task-date">
+                        <br>
+                        <button id="submit-task" >Enter</button>
+                    </div>
+                </div>
+            </div>
         <% } %>
     </div>
 </body>
 
 <script>
-    // console.log("<%= data.name %>")
-    for (let [index,value] of "<%= data.name %>") {
-        console.log(index,value)
-    }
+
+
     let current_user = "<%= user.name %>"
     let current_tab = "<%= user.tab %>"
     let today = new Date()
