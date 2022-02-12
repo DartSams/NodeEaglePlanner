@@ -4,291 +4,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" type="text/css" href="./main.css"> -->
-    <link rel="stylesheet" href="css/main.css">
-
-    <script src="static/FutureEagles/js/task.js"></script>
-    <title>Home</title>
-
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="395831929716-qh9p01m4com4riam46q5bjmk8pvrnqru.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>SQL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 </head>
 <body>
-
-    <div id="sidebar" style="background-color: blueviolet;">
-        <div id="toggle" onclick="showMobileNav()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-
-        <div id="sidebar-buttons">
-            <button id="calendar-switch">Calendar</button>
-            <button id="task-switch">Task</button>
-            <button id="notes-switch">Notes</button>
-            <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div></button>
-        </div>
-    </div>
-
-    <div id="center">
+    <!-- <%= JSON.stringify(data).user %> -->
+    <!-- <%= data.task %> -->
+    <div id="tasks">
 
     </div>
-
 </body>
-<footer>
-    <script>
-        let current_user = "{{current_user|safe}}";
-        let current_user_id = "{{current_user_id|safe}}"
-        console.log(current_user)
-        let current_tab = "{{tab|safe}}"
-        let tasks = "{{ tasks|safe }}".replace("[","").replace("]","").split(",")
-        let due_date = "{{due_date|safe}}".replace("[","").replace("]","").replace(" ","").split(",")
-        let taskDict = {}
-        for (let i = 0;i<tasks.length;i++) {
-            taskDict[due_date[i]] = tasks[i]
-        }
-        console.log(taskDict)
-        let today = new Date()
-        function getDaysInMonth(month,year) {
-            // Here January is 1 based
-            //Day 0 is the last day in the previous month
-            return new Date(year, month, 0).getDate();
-            // Here January is 0 based
-            // return new Date(year, month+1, 0).getDate();
-        };
+<script>
+
+    let data = JSON.parse('<%- JSON.stringify(data) %>')
+    console.log(data.length)
+    let taskContainer = document.querySelector("#tasks")
+    // let breakvf = document.createElement("br")
+
+    for (let i=0;i<data.length;i++) {
+        console.log(data[i])
+        let b = document.createElement("br")
+        taskContainer.append(data[i].user,"-",data[i].task)
+        taskContainer.append(b)
+    }
 
 
 
-
-
-
-        //sign into google
-        function onSignIn(googleUser) {
-            
-            // Useful data for your client-side scripts:
-            var profile = googleUser.getBasicProfile();
-
-
-            // The ID token you need to pass to your backend:
-            var id_token = googleUser.getAuthResponse().id_token;
-            // testSocket("Signing In,")
-
-            document.getElementById("google-signin-button").remove() //removes google signin button when signing into account
-            //create element using google profile full name
-            let sidebarButtons = document.getElementById("sidebar-buttons");
-            let profileDiv = document.createElement("div");
-            profileDiv.id = "profile-div"
-
-            let profileUser = document.createElement("p");
-            profileUser.innerText = profile.getName();
-            profileUser.id = profile.getId();
-            profileUser.className = "profile-user"
-
-
-            let dropdown = document.createElement("div");
-            dropdown.id = "dropdown"
-            dropdown.addEventListener("click",function() {
-                signOut()
-            })
-            let settingsDivContainer = document.createElement("div");
-            settingsDivContainer.id = "settings-container"
-            let settingsDiv = document.createElement("div");
-            settingsDiv.id = "settings"
-            for (let i = 0;i <= 2;i++) {
-                let span = document.createElement("span");
-                settingsDiv.appendChild(span)
-            } //creates settings button
-            settingsDivContainer.appendChild(settingsDiv)
-            dropdown.appendChild(settingsDivContainer)
-
-            let dropdownContent = document.createElement("div");
-            dropdownContent.id = "dropdown-content"
-            const dropContentList = {
-                "Sign Out":"sign-out",
-            }
-            for (const key in dropContentList) {
-                let dropdownLink = document.createElement("a");
-                dropdownLink.innerText = key
-                dropdownLink.id = `${dropContentList[dropdownLink.innerText]},`
-                dropdownLink.addEventListener("click",function(){
-                    console.log(dropdownLink.id)
-                    testSocket(dropdownLink.id)
-                }) //when dropdown item clicked it sends data to backend consumer
-                dropdownContent.appendChild(dropdownLink)
-            } //creates dropdown menu when hovering over settings button
-
-            profileDiv.append(profileUser)
-            dropdown.appendChild(dropdownContent)
-            profileDiv.append(dropdown)
-            sidebarButtons.append(profileDiv)
-
-            const profileData = {
-                "data message":"sign in",
-                "user":profile.getName(),
-                "ID":profile.getId(),
-                "profile image":profile.getImageUrl(),
-                "email":profile.getEmail()
-            }
-            $.ajax({
-                url:"http://localhost:8000/account/signin/",
-                type: "POST",
-                data: profileData,
-                traditional: true,
-                success:function(response){
-                    let taskList = "{{user_task|safe}}"
-                    // window.location = "http://localhost:8000/"
-                    // console.log(taskList)
-                    // console.log(taskDict)
-                    // console.log(Object.entries(taskDict)[2])
-                    // console.log(current_user)
-                    // if (current_user == "") {
-                    //     // window.location.reload()
-                    //     window.location = "http://localhost:8000/account/signin"
-                    // } //reloads the page when signing in IMPORTANT if removed when there will be no get request to fetch the task from db
-                },
-                complete:function(){},
-                error:function (document, textStatus, thrownError){
-                    alert("error");
-                    console.log("error")
-                }
-            }); //sends js dict to django backend view using ajax call
-        }
-
-
-
-
-
-
-
-        function signOut() {
-            const profileData = {
-                "data message":"signing out",
-            }
-            $.ajax({
-                url:"/",
-                type: "POST",
-                data: profileData,
-                traditional: true,
-                success:function(response){},
-                complete:function(){},
-                error:function (document, textStatus, thrownError){
-                    alert("error");
-                }
-            }); //sends js dict to django backend view using ajax call
-
-            var auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                auth2.disconnect();
-                // document.location='http://localhost:8000/account/signin/';
-                // window.location.reload()
-            });
-            window.location='http://localhost:8000/account/signin/';
-
-
-            document.getElementById("profile-div").remove()
-        } //signs out of google account
-
-
-        if (current_user && current_tab) {
-            let calendarSwitch = document.querySelector("#calendar-switch");
-            calendarSwitch.addEventListener("click",function() {
-                window.location.href = "/calendar"
-            })
-
-            let listSwitch = document.querySelector("#task-switch");
-            listSwitch.addEventListener("click",function() {
-                window.location.href = "/tasks"
-            })
-
-            let notesSwitch = document.querySelector("#notes-switch");
-            notesSwitch.addEventListener("click",function() {
-                window.location.href = "/notes"
-            })
-
-            if (current_tab == "tasks") {
-                let createTask = document.getElementById("create-task");
-                if (createTask) {
-                    let popupContainer = document.querySelector("#popup-container")
-                    createTask.addEventListener("click",function() {
-                        let popup = popupContainer.children[0]
-                        openPopup(popupContainer,popup)
-                    })
-
-                    let taskButton = document.getElementById("submit-task")
-                    taskButton.addEventListener("click",function() {
-                        sendTaskData("add new task")
-                    })
-                } //creates popup for task
-            } else if (current_tab == "notes") {
-                taskDict["notes"] = "test"
-                let createNote = document.querySelector("#create-note");
-                if (createNote) {
-                    let popupContainer = document.querySelector("#popup-container")
-                    createNote.addEventListener("click",function() {
-                        let popup = popupContainer.children[0]
-                        openPopup(popupContainer,popup)
-                    })
-
-                    let notesButton = document.getElementById("submit-note")
-                    notesButton.addEventListener("click",function() {
-                        sendTaskData("add new note")
-                        // displayNewNotes("cum")
-                        // closePopup(popupContainer)
-                    })
-                } //create popup for notes
-
-                let note = document.getElementsByClassName("note")
-                
-                for (let i = 0;i<note.length;i++) {
-                    note[i].addEventListener("click",function() {
-                        // console.log(this)
-                        selectNote(this)
-                    })
-                }
-
-                let noteItem = document.getElementsByClassName("note")
-                for (let i = 0;i<noteItem.length;i++) {
-                    let note = noteItem[i].children[0].innerText
-                    let x = Math.floor(Math.random() * 256);
-                    let y = 100+ Math.floor(Math.random() * 256);
-                    let z = 50+ Math.floor(Math.random() * 256);
-                    if (x && y && z > 240) {
-                        x-=20;
-                        y-=30;
-                        z-=30
-                    }
-                    let randomColor = `rgb(${x},${y},${z})`
-                    noteItem[i].style.backgroundColor = `${randomColor}`
-                } //generates a random color not white for all li notes
-
-                let searchTagButton = document.querySelector("#tag-search");
-                searchTagButton.addEventListener("click",function() {
-                    let searchTag = document.querySelector("#note-tag-input");
-                    // console.log(searchTag.value)
-                    displayTaggedNotes(searchTag.value)
-                    document.querySelector("#note-tag-input").value = ""
-                })
-            } else if (current_tab == "calendar") {
-                createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),taskDict)
-                // for (let i = 1;i<=12;i++) {
-                //     console.log(getDaysInMonth(i,2022))
-                // } //returns the max number of days in all 12 months
-            }
-            
-            
-            if (document.querySelector("#popup-container")) {
-                let closePopupButton = document.querySelector(".popup-header").children[0]
-                closePopupButton.addEventListener("click",function() {
-                let popupContainer = document.querySelector("#popup-container")
-                closePopup(popupContainer)
-            }) //closes popup
-            }
-            
-        }
-    </script>
-</footer>
+</script>
 </html>

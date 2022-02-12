@@ -149,7 +149,7 @@ selectUser = (email,name) => {
     }); //returns all db entries in FutureEagles_job table
 }
 
-selectUser("dsams@gmail.com","sams")
+// selectUser("dsams@gmail.com","sams")
 
 module.exports = { insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote,selectUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
 // module.exports = con;

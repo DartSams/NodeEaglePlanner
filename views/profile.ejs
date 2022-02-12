@@ -185,7 +185,10 @@
 </body>
 
 <script>
-    console.log("<%= sql_data %>")
+    // console.log("<%= data.name %>")
+    for (let [index,value] of "<%= data.name %>") {
+        console.log(index,value)
+    }
     let current_user = "<%= user.name %>"
     let current_tab = "<%= user.tab %>"
     let today = new Date()

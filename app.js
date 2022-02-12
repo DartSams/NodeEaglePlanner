@@ -101,6 +101,16 @@ app.get("/", (requst,response) => {
     response.render("login",data)
 });
 
+app.get("/test", (req,res) => {
+    con.query("SELECT * FROM EaglePlanner_tasks ", function (err, result, fields) {
+        if (err) {
+           //
+        }
+        console.log(result[19])
+        res.render("test",{data:result})
+    }); 
+})
+
 app.post("/",(req,res) => {
     // console.log(req.body)
     let username = req.body.username
@@ -132,21 +142,15 @@ app.post("/",(req,res) => {
 });
 
 app.get("/profile/:name/:tab", (req,res) => {
-    // data = {
-    //     route:"profile",
-    //     name:req.params.name,
-    //     tab:req.params.tab,
-    //     // token:users["id"]
-    // }
     users[req.params.name] =[
         users["tab"] = req.params.tab
     ]
-    con.query("SELECT * FROM EaglePlanner_users WHERE email = ? AND name = ?",[users.email,req.params.name], function (err, result, fields) {
-        users["data"] = result
-        res.render("profile",{user:users,sql_data:result})
-    }); //returns all db entries in FutureEagles_job table
-    // console.log(users)
-    // res.render("profile",users)
+    con.query("SELECT * FROM EaglePlanner_users WHERE name = ?",["sams"], function (err, result, fields) {
+        if (err) {
+           //
+        }
+        res.render("profile",{user:users,data:result[0]})
+    }); 
 });
 
 //App running
