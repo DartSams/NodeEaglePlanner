@@ -9,7 +9,6 @@ const { Server } = require("socket.io");
 const io = new Server(server); //connects the http server to a websocket connection
 const port = process.env.PORT || 8000; //set port to a port provided in env variables or set to default 8000
 const users = {}
-
 //STATIC
 app.use(express.static('public'));
 app.use('/css',express.static("public/css"));
@@ -26,22 +25,14 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // mysql connection to google db
-// const con = mysql.createConnection({
-//     host: "us-cdbr-east-04.cleardb.com",
-//     user: "bcc2ec4fcecbe5",
-//     password: "cfb6b512",
-//     database: "heroku_d10e4ce632a9633"
-// });
-
-//VIEWS
-app.get("/", (requst,response) => {
-    // response.send("hello world")
-    data = {
-        route:"login"
-    }
-    response.render("login",data)
+const con = mysql.createConnection({
+    host: "us-cdbr-east-04.cleardb.com",
+    user: "bcc2ec4fcecbe5",
+    password: "cfb6b512",
+    database: "heroku_d10e4ce632a9633"
 });
 
+//Socket functions
 io.on('connection', (socket) => {
     console.log('Connnection made to profle page javascript file');
     socket.on("testing emit", (data) => {
@@ -63,17 +54,12 @@ io.on('connection', (socket) => {
 
     socket.on("finished editing task",data => {
         let jsonData = JSON.stringify(data)
-        // (user,id,task,due_date,status)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         query.editTask(data.original_task,data.original_date,data.original_status,data.new_task,data.new_date,data.new_status,data.user,data.id)
-        // console.log(data.new_note)
-        // query.editNote(data.new_note,data.new_tag,data.user,data.id,data.original_note,data.original_tag)
-        // [new_note,new_tag,user,id,original_note,original_tag]
     });
 
     socket.on("delete task",data => {
         let jsonData = JSON.stringify(data)
-        // task,status,due_date,user,id
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         console.log(data.task)
         query.deleteTask(data.task,data.status,data.due_date,data.id)
@@ -84,7 +70,6 @@ io.on('connection', (socket) => {
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         console.log(data.new_note)
         query.editNote(data.new_note,data.new_tag,data.user,data.id,data.original_note,data.original_tag)
-        // [new_note,new_tag,user,id,original_note,original_tag]
     });
 
     socket.on("delete note",data => {
@@ -92,7 +77,6 @@ io.on('connection', (socket) => {
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         console.log(data.new_note)
         query.deleteNote(data.user,data.id,data.note)
-        // [new_note,new_tag,user,id,original_note,original_tag]
     });
 });
 
@@ -108,45 +92,61 @@ io.on('connect_failed', (socket) => {
     console.logs(socket);
 }); 
 
+//VIEWS
+app.get("/", (requst,response) => {
+    // response.send("hello world")
+    data = {
+        route:"login"
+    }
+    response.render("login",data)
+});
+
 app.post("/",(req,res) => {
     // console.log(req.body)
     let username = req.body.username
     let password = req.body.password
+    let email = req.body.email
     let user = req.body.user
+    let id;
+    // console.log(req.body)
 
     if (user) {
-        console.log("running user function")
+        // console.log("running user function")
         users[user] = [
             users["name"] = user || username,
-            users["profile_id"] = req.body.id || 3434, //for now hardcoded to 3434 but setup later get from db the profile_id
+            users["profile_id"] = req.body.id, //for now hardcoded to 3434 but setup later get from db the profile_id
             users["profile_img"] = req.body.profile_image,
             users["email"] = req.body.email
         ]
         query.insertUser(req.body.user,req.body.id,req.body.profile_image,req.body.email)
-        res.redirect(`/profile/${user}/user`)
-    } else if (username) {
-        console.log("running username function")
+        res.redirect(`/profile/${user}/tasks`)
+    } else if (email) {
         users[username] = [
-            users["name"] = username,
-            users["profile_id"] = 3434,
-            // users["profile_img"] = req.body.profile_image,
-            // users["email"] = req.body.email
+            users["name"] = user || username,
+            users["profile_id"] = req.body.id || 3434, //for now hardcoded to 3434 but setup later get from db the profile_id
+            users["profile_img"] = req.body.profile_image,
+            users["email"] = req.body.email
         ]
         res.redirect(`/profile/${username}/tasks`)
     }
 });
 
 app.get("/profile/:name/:tab", (req,res) => {
-    data = {
-        route:"profile",
-        name:req.params.name,
-        tab:req.params.tab,
-        token:users["id"]
-    }
+    // data = {
+    //     route:"profile",
+    //     name:req.params.name,
+    //     tab:req.params.tab,
+    //     // token:users["id"]
+    // }
     users[req.params.name] =[
         users["tab"] = req.params.tab
     ]
-    res.render("profile",users)
+    con.query("SELECT * FROM EaglePlanner_users WHERE email = ? AND name = ?",[users.email,req.params.name], function (err, result, fields) {
+        users["data"] = result
+        res.render("profile",{user:users,sql_data:result})
+    }); //returns all db entries in FutureEagles_job table
+    // console.log(users)
+    // res.render("profile",users)
 });
 
 //App running

@@ -27,7 +27,7 @@
             <button id="task-switch">Task</button>
             <button id="notes-switch">Notes</button>
             <div id="profile-div">
-                <p class="profile-user" id=<%= profile_id %>><%= name %></p>
+                <p class="profile-user" id=<%= user.profile_id %>><%= user.name %></p>
                 <div id="dropdown">
                     <div id="settings-container">
                         <div id="settings">
@@ -46,9 +46,9 @@
     <!-- ############SIDEBAR###########33 -->
 
     
-    <div id="center" class=<%= tab %>>
+    <div id="center" class=<%= user.tab %>>
         <!-- ############NOTES###########33 -->
-        <% if (tab === "notes") {%>
+        <% if (user.tab === "notes") {%>
             <div id="notes-tags-list">
             
                 <div id="tag-search-div">
@@ -114,7 +114,7 @@
                     </div>
                 </div>
             </div>
-        <% } else if (tab === "tasks") {%>
+        <% } else if (user.tab === "tasks") {%>
             <ul id="list-container">
                 <button id="create-task">Create new Task</button>
                 <div id="column-titles">
@@ -161,7 +161,7 @@
                     </div>
                 </div>
             </div>
-        <% } else if (tab === "calendar") {%>
+        <% } else if (user.tab === "calendar") {%>
             <div id="calendar-container" >
                 
             </div>
@@ -185,17 +185,18 @@
 </body>
 
 <script>
-    let current_user = "<%= name %>"
-    let current_tab = "<%= tab %>"
+    console.log("<%= sql_data %>")
+    let current_user = "<%= user.name %>"
+    let current_tab = "<%= user.tab %>"
     let today = new Date()
-    if ("<%= tab %>" == "calendar") {
+    if ("<%= user.tab %>" == "calendar") {
         createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),{})
     } //after getting all task from db replace {} with that
-    else if ("<%= tab %>" == "notes") {
+    else if ("<%= user.tab %>" == "notes") {
         for(let i=0;i<=100;i++){
             displayNewNote(0,"test") //test the limits of creating notes using js dom using automatic data of 100 notes
         } 
-    } else if ("<%= tab %>" == "tasks") {
+    } else if ("<%= user.tab %>" == "tasks") {
         for(let i=0;i<=100;i++){
             // displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
         } 
@@ -203,24 +204,24 @@
 
     let calendarSwitch = document.querySelector("#calendar-switch");
     calendarSwitch.addEventListener("click",function() {
-        window.location = "/profile/<%= name %>/calendar"
+        window.location = "/profile/<%= user.name %>/calendar"
     })
 
     let listSwitch = document.querySelector("#task-switch");
     listSwitch.addEventListener("click",function() {
-        window.location = "/profile/<%= name %>/tasks"
+        window.location = "/profile/<%= user.name %>/tasks"
     })
 
     let notesSwitch = document.querySelector("#notes-switch");
     notesSwitch.addEventListener("click",function() {
-        // window.location = "/profile/<%= name %>/notes"
+        // window.location = "/profile/<%= user.name %>/notes"
         $.ajax({
             url:`/`,
             type: "get",
             // data: profileData,
             traditional: true,
             success:function(response){
-                window.location = `/profile/<%= name %>/notes` //not needed on success sends post request to login pages route
+                window.location = `/profile/<%= user.name %>/notes` //not needed on success sends post request to login pages route
             },
             complete:function(){},
             error:function (document, textStatus, thrownError){

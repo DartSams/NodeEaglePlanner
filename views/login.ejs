@@ -18,11 +18,11 @@
         <div id="account-signin">
             <div id="website-login">
                 <form action="/" method="post">
-                    <label for="username">Username:</label><br>
-                    <input type="text" name="username">
+                    <label for="username">Email:</label><br>
+                    <input type="text" name="email">
                     <br>
-                    <label for="password">Password:</label><br>
-                    <input type="password" name="password">
+                    <label for="password">Username:</label><br>
+                    <input type="username" name="username">
                     <br>
                     <br>
                     <div id="submit">
@@ -56,7 +56,6 @@
             "id":profile.getId(),
             "profile_image":profile.getImageUrl(),
             "email":profile.getEmail(),
-            "token":id_token
         }
         console.log(profileData)
         $.ajax({

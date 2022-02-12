@@ -137,6 +137,19 @@ deleteNote = (user,id,note) => {
     }); //queries db for a specific note and deletes it
 }
 
+selectUser = (email,name) => {
+    con.on("error", (err) => {
+        console.log(err)
+    })
+    con.query("SELECT * FROM EaglePlanner_users WHERE email = ? AND name = ?",[email,name], function (err, result, fields) {
+        if (err) {
+           //
+        }
+        console.log(result[0].password_id)
+    }); //returns all db entries in FutureEagles_job table
+}
 
-module.exports = { insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
+selectUser("dsams@gmail.com","sams")
+
+module.exports = { insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote,selectUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
 // module.exports = con;
