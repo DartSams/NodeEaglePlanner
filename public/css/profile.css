@@ -31,7 +31,9 @@
     position: fixed;
     width:250px;
     height: 100%;
-    background-color: var(--Sidebar_color);
+    /* background-color: var(--Sidebar_color); */
+    background-color: palegreen;
+
     left:-310px;
     transition: 1s;
     z-index:2;
@@ -48,6 +50,7 @@
     width:45px;
     height:5px;
     background-color: var(--Sidebar_hamburger);
+    /* background-color: palegreen; */
     display:block;
     margin-top: 4px;;
 } 
@@ -68,7 +71,8 @@
     padding:5px;
     width:55%;
     margin-bottom: 10px;
-    font-size: var(--Text_size);    
+    font-size: var(--Text_size);   
+    /* color: white;  */
 }
 
 #sidebar #sidebar-buttons button:hover {
@@ -262,10 +266,19 @@ textarea{
 
 #notes-tags-list #tag-search-div {
     display: flex;
+    flex-direction: column;
 }
 
-#notes-tags-list #tag-search-div #note-tag-input {
-    width: 20vw;
+/* #notes-tags-list #tag-search-div  {
+    width: 10vw;
+} */
+
+#notes-tags-list #note-tag-input {
+    width: 10vw;
+}
+
+#notes-tags-list #tag-search {
+    width:10vw;
 }
 
 #notes-tags-list #tag {
