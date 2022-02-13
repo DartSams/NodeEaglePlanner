@@ -30,7 +30,7 @@ function countInArray(array, what) {
             // console.log(array[i].innerText)
             if (count > 1) {
                 // console.log(array[i].innerText)
-                   array[i].remove()
+                array[i].remove()
             }
         }
     }
@@ -608,7 +608,7 @@ function createMonth(monthHolder,dayHolder,tasks) {
     dayContainer.id = "days-container"
     let ulDays = document.createElement("ul");
     ulDays.id = "month"
-
+    let num = 0
     for (let i=1;i<=dayHolder;i++) {
         let liDay = document.createElement("li");
         liDay.id = "day"
@@ -619,7 +619,6 @@ function createMonth(monthHolder,dayHolder,tasks) {
         
         let dayTask = document.createElement("div");
         dayTask.id = "day-task"
-        let num = 0
         for (let key in tasks) {
             month = tasks[key].due_date.replace("'","").split("-")
             day = tasks[key].due_date.split("-")
@@ -632,7 +631,6 @@ function createMonth(monthHolder,dayHolder,tasks) {
                 num++
             } else {
                 dayNum.innerText = i
-                tasks[0].task
             } 
         } 
         liDay.append(dayNum)

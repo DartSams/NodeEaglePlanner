@@ -25,12 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 // mysql connection to google db
-const con = mysql.createConnection({
+const con = mysql.createPool({
     host: "us-cdbr-east-04.cleardb.com",
     user: "bcc2ec4fcecbe5",
     password: "cfb6b512",
-    database: "heroku_d10e4ce632a9633"
-});
+    database: "heroku_d10e4ce632a9633",
+  });
 
 //Socket functions
 io.on('connection', (socket) => {
@@ -102,15 +102,6 @@ app.get("/", (requst,response) => {
     response.render("login",data)
 });
 
-app.get("/test", (req,res) => {
-    con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[3434], function (err, result, fields) {
-        if (err) {
-           //
-        }
-        console.log(result)
-        res.render("test",{data:result})
-    }); 
-})
 
 app.post("/",(req,res) => {
     // console.log(req.body)
@@ -146,25 +137,32 @@ app.get("/profile/:name/:tab", (req,res) => {
     users[req.params.name] =[
         users["tab"] = req.params.tab
     ]
-    
-    if (req.params.tab === "tasks" || "calendar") {
+
+    if (req.params.tab == "tasks" ) {
         con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
             if (err) {
             //
             }
-            // console.log(result[19])
+            // console.log(result)
             res.render("profile",{user:users,data:result})
         }); 
-    } else if (req.params.tab === "notes") {
+    } else if (req.params.tab == "notes") {
         con.query("SELECT * FROM EaglePlanner_notes WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
             if (err) {
             //
             }
-            // console.log(result[19])
+            // console.log(result)
             res.render("profile",{user:users,data:result})
         }); 
-    }
-    
+    } else if (req.params.tab == "calendar") {
+        con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
+            if (err) {
+            //
+            }
+            // console.log(result)
+            res.render("profile",{user:users,data:result})
+        }); 
+    } // do not use || keyword in one of the if statements because it breaks and stops checking the other statements
 });
 
 //App running

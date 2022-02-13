@@ -64,7 +64,7 @@
             data: profileData,
             traditional: true,
             success:function(response){
-                window.location = `/profile/${profileData.user}/tasks` //not needed on success sends post request to login pages route
+                window.location = `/profile/${profileData.user}/notes` //not needed on success sends post request to login pages route
             },
             complete:function(){},
             error:function (document, textStatus, thrownError){

@@ -1,24 +1,12 @@
 const mysql = require('mysql');
 
-const con = mysql.createConnection({
+const con = mysql.createPool({
     host: "us-cdbr-east-04.cleardb.com",
     user: "bcc2ec4fcecbe5",
     password: "cfb6b512",
     database: "heroku_d10e4ce632a9633",
-});
-
-// const mysql = require("mysql");    
-// // const dbConfig = require("../config/db.config.js");
-    
-// const con = mysql.createPool({
-//     connectionLimit : 10,
-//     host: "us-cdbr-east-04.cleardb.com",
-//     user: "bcc2ec4fcecbe5",
-//     password: "cfb6b512",
-//     database: "heroku_d10e4ce632a9633"
-// });
-
-// module.exports = con;
+  });
+  
 // con.connect(function(err) {
 
 //    let tasks = con.query("CREATE TABLE EaglePlanner_tasks (user VARCHAR(255), id VARCHAR(255), task VARCHAR(255), due_date VARCHAR(255), status VARCHAR(20),task_key int PRIMARY KEY AUTO_INCREMENT)", function (err, result) {
@@ -40,31 +28,25 @@ const con = mysql.createConnection({
 // let name = "dart"
 
 deleteUser = (name) => {
-    con.connect(function(err) {
+    con.query(`DELETE FROM EaglePlanner_users WHERE name = '${name}'`, function (err, result, fields) {
         if (err) throw err;
-        con.query(`DELETE FROM EaglePlanner_users WHERE name = '${name}'`, function (err, result, fields) {
-            if (err) throw err;
-        }); //returns all db entries in FutureEagles_job table
-    });
+    }); //returns all db entries in FutureEagles_job table
 }
 
 
 insertUser = (name,id,image,email) => {
-    con.connect(function(err) {
-        if (err) console.log(err);
-        con.query(`SELECT * FROM EaglePlanner_users WHERE name = '${name}'`,function (err, result, fields) {
-            if (err) console.log(err)
-            // console.log(result)
-            if (result.length == 0) {
-                con.query(`INSERT INTO EaglePlanner_users (name,password_id,image_link,email) VALUES ('${name}','${id}','${image}','${email}')`,function (err, result, fields) {
-                    if (err) console.log(err)
-                    console.log("Entry created")
-                });
-            } else if (result) {
-                console.log("Entry already exist") 
-                return
-            }
-        });
+    con.query(`SELECT * FROM EaglePlanner_users WHERE name = '${name}'`,function (err, result, fields) {
+        if (err) console.log(err)
+        // console.log(result)
+        if (result.length == 0) {
+            con.query(`INSERT INTO EaglePlanner_users (name,password_id,image_link,email) VALUES ('${name}','${id}','${image}','${email}')`,function (err, result, fields) {
+                if (err) console.log(err)
+                console.log("Entry created")
+            });
+        } else if (result) {
+            console.log("Entry already exist") 
+            return
+        }
     });
 } //this checks the db for users with a certain name and if found does nothing but if user not found creates new user
 // insertUser("sams") //testing calling arrow function
@@ -74,12 +56,9 @@ insertUser = (name,id,image,email) => {
 
 
 createNote = (name,id,note_message,note_tag) => {
-    con.connect(function(err) {
-        if (err) console.log(err);
-        con.query(`INSERT INTO EaglePlanner_notes (user,id,note_message,note_tag) VALUES ('${name}','${id}','${note_message}','${note_tag}')`,function (err, result, fields) {
-            if (err) console.log(err)
-            console.log("Entry created")
-        });
+    con.query(`INSERT INTO EaglePlanner_notes (user,id,note_message,note_tag) VALUES ('${name}','${id}','${note_message}','${note_tag}')`,function (err, result, fields) {
+        if (err) console.log(err)
+        console.log("Entry created")
     });
 }
 
@@ -140,11 +119,10 @@ selectUser = (email,name) => {
         if (err) {
            //
         }
-        console.log(result[0].password_id)
+        console.log(result)
     }); //returns all db entries in FutureEagles_job table
 }
 
 // selectUser("dsams@gmail.com","sams")
 
-module.exports = { insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote,selectUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")
-// module.exports = con;
+module.exports = { con,insertUser,deleteUser,createNote,createTask,editTask,deleteTask,editNote,deleteNote,selectUser }; //exports functions to be able to use in other files by doing const <variableName> = require("./models")

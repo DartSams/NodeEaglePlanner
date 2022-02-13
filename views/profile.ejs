@@ -115,6 +115,7 @@
             </div>
         <% } else if (user.tab === "notes") {%>
             <% allNotes = JSON.parse(JSON.stringify(data)) %>
+            <!-- <%= data[0]["id"] %> -->
             <!-- <% for (let x in allNotes){ %>
                 <%= allNotes[x]["user"] %> - <%= allNotes[x]["note_message"] %>
                 <br>
@@ -132,11 +133,9 @@
                 
         
                 <% for (let x in allNotes){ %>
-                    <% if (allNotes[x]["note_tag"] != "#") {%>
-                        <div id="tag" class="note-tag-div">
-                            <input type="radio" name="tag" value="<%= allNotes[x]['note_tag'] %>" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="<%= allNotes[x]['note_tag'] %>"><%= allNotes[x]['note_tag'] %></label>
-                        </div>
-                    <% } %>
+                    <div id="tag" class="note-tag-div">
+                        <input type="radio" name="tag" value="<%= allNotes[x]['note_tag'] %>" id="note-tag-radio" onclick="displayTaggedNotes(value)"><label for="<%= allNotes[x]['note_tag'] %>"><%= allNotes[x]['note_tag'] %></label>
+                    </div>
                 <% } %>
             </div>
 
