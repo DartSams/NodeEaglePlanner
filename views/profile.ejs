@@ -50,9 +50,9 @@
         <!-- ############NOTES###########33 -->
         
         <% if (user.tab === "calendar") {%>
-            <div id="calendar-container" >
+            <!-- <div id="calendar-container" >
                 
-            </div>
+            </div> -->
         
             <div id="popup-container">
                 <div class="popup" id="note-popup">
@@ -179,19 +179,16 @@
 
     let current_user = "<%= user.name %>"
     let current_tab = "<%= user.tab %>"
-    let today = new Date()
-    if ("<%= user.tab %>" == "calendar") {
-        createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),{})
-    } //after getting all task from db replace {} with that
-    // else if ("<%= user.tab %>" == "notes") {
-    //     for(let i=0;i<=100;i++){
-    //         displayNewNote(0,"test") //test the limits of creating notes using js dom using automatic data of 100 notes
-    //     } 
-    // } else if ("<%= user.tab %>" == "tasks") {
-    //     for(let i=0;i<=100;i++){
-    //         displayNewTask("sleep","now") //test the limits of creating task using js dom using automatic data of 100 task
-    //     } 
+    let taskDict = JSON.parse('<%- JSON.stringify(data) %>')
+    // for (let i=0;i<data.length;i++) {
+    //     console.log(data[i])
     // }
+    // console.log(data[0])
+    let today = new Date()
+    // if ("<%= user.tab %>" == "calendar") {
+    //     createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),taskDict)
+    // } //after getting all task from db replace {} with that
+
 
     let calendarSwitch = document.querySelector("#calendar-switch");
     calendarSwitch.addEventListener("click",function() {
@@ -244,7 +241,7 @@
                     sendTaskData("add new task")
                 })
             } //creates popup for task
-        } else if (current_tab == "notes" || "test_notes") {
+        } else if (current_tab == "notes") {
             let allTags = document.querySelectorAll("#tag")
 
             for (let x in allTags) {

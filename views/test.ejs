@@ -21,16 +21,16 @@
 </body>
 <script>
 
-    // let data = JSON.parse('<%- JSON.stringify(data) %>')
+    let data = JSON.parse('<%- JSON.stringify(data) %>')
     // console.log(data.length)
     // let taskContainer = document.querySelector("#tasks")
 
-    // for (let i=0;i<data.length;i++) {
-    //     console.log(data[i])
-    //     let b = document.createElement("br")
-    //     taskContainer.append(data[i].user,"-",data[i].task)
-    //     taskContainer.append(b)
-    // }
+    for (let i=0;i<data.length;i++) {
+        console.log(data[i])
+        // let b = document.createElement("br")
+        // taskContainer.append(data[i].user,"-",data[i].task)
+        // taskContainer.append(b)
+    }
 
 </script>
 </html>

@@ -573,6 +573,8 @@ function getDaysInMonth(month,year) {
 };
 
 function createMonth(monthHolder,dayHolder,tasks) {
+    console.log(tasks)
+    // console.log(tasks[0].task)
     let centerDiv = document.querySelector("#center")
     let calendarContainer = document.createElement("div");
     calendarContainer.id = "calendar-container"
@@ -617,15 +619,20 @@ function createMonth(monthHolder,dayHolder,tasks) {
         
         let dayTask = document.createElement("div");
         dayTask.id = "day-task"
+        let num = 0
         for (let key in tasks) {
-            month = key.replace("'","").split("-")
-            day = key.slice(0,-1).split("-")
-            if (i == day[1] &&  Months[monthHolder] == Months[parseInt(month[0])] ) {
+            month = tasks[key].due_date.replace("'","").split("-")
+            day = tasks[key].due_date.split("-")
+            // console.log(day)
+            if (i == day[2] &&  Months[monthHolder] == Months[parseInt(month[1])] ) {
                 let task = document.createElement("div");
-                task.innerText = tasks[key]
+                task.innerText = tasks[num].task
+                // console.log(tasks[num].task)
                 dayTask.append(task)
+                num++
             } else {
                 dayNum.innerText = i
+                tasks[0].task
             } 
         } 
         liDay.append(dayNum)

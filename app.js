@@ -147,7 +147,7 @@ app.get("/profile/:name/:tab", (req,res) => {
         users["tab"] = req.params.tab
     ]
     
-    if (req.params.tab === "tasks") {
+    if (req.params.tab === "tasks" || "calendar") {
         con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
             if (err) {
             //
