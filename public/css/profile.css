@@ -72,7 +72,7 @@
     width:55%;
     margin-bottom: 10px;
     font-size: var(--Text_size);   
-    /* color: white;  */
+    color: black; 
 }
 
 #sidebar #sidebar-buttons button:hover {
@@ -83,7 +83,7 @@
 #sidebar #sidebar-buttons #profile-div {
     display: flex;
     flex-direction: row;
-    position: fixed;
+    position: relative;
     bottom:0;
     border:3px white solid;
     border-radius: 5px;
@@ -274,11 +274,11 @@ textarea{
 } */
 
 #notes-tags-list #note-tag-input {
-    width: 10vw;
+    width: 20vw;
 }
 
 #notes-tags-list #tag-search {
-    width:10vw;
+    width:15vw;
 }
 
 #notes-tags-list #tag {
