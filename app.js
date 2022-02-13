@@ -76,7 +76,8 @@ io.on('connection', (socket) => {
         let jsonData = JSON.stringify(data)
         console.log(`Recieved socket data from frontend saying: ${jsonData}`)
         console.log(data.new_note)
-        query.deleteNote(data.user,data.id,data.note)
+        new_note = data.note.replaceAll("<br>","\n") //needed because the frontend js sends html included so this replace all html break tags with line breaks
+        query.deleteNote(data.user,data.id,new_note)
     });
 });
 
@@ -154,7 +155,7 @@ app.get("/profile/:name/:tab", (req,res) => {
             // console.log(result[19])
             res.render("profile",{user:users,data:result})
         }); 
-    } else if (req.params.tab === "test-notes") {
+    } else if (req.params.tab === "notes") {
         con.query("SELECT * FROM EaglePlanner_notes WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
             if (err) {
             //

@@ -186,6 +186,7 @@ testSocket = function(data){
             new_tag:splitData[8]
         })
     } else if (splitData[0] == "delete note") {
+        console.log(splitData)
         socket.emit("delete note",{
             msg:splitData[0],
             user:splitData[1],
