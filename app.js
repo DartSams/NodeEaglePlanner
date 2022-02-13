@@ -146,13 +146,24 @@ app.get("/profile/:name/:tab", (req,res) => {
         users["tab"] = req.params.tab
     ]
     
-    con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
-        if (err) {
-           //
-        }
-        // console.log(result[19])
-        res.render("profile",{user:users,data:result})
-    }); 
+    if (req.params.tab === "tasks") {
+        con.query("SELECT * FROM EaglePlanner_tasks WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
+            if (err) {
+            //
+            }
+            // console.log(result[19])
+            res.render("profile",{user:users,data:result})
+        }); 
+    } else if (req.params.tab === "test-notes") {
+        con.query("SELECT * FROM EaglePlanner_notes WHERE id = ?",[users["profile_id"]], function (err, result, fields) {
+            if (err) {
+            //
+            }
+            // console.log(result[19])
+            res.render("profile",{user:users,data:result})
+        }); 
+    }
+    
 });
 
 //App running

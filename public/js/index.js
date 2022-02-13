@@ -22,6 +22,21 @@ const Months = {
     12:"December",
 }
 
+function countInArray(array, what) {
+    var count = 0;
+    for (var i = 0; i < array.length; i++) {
+        if (array[i].innerText === what.innerText) {
+            count++;
+            // console.log(array[i].innerText)
+            if (count > 1) {
+                // console.log(array[i].innerText)
+                   array[i].remove()
+            }
+        }
+    }
+    return count
+} //iterates through list of dom elements and if same one (what) is in more than once it removes from dom
+
 
 function showMobileNav() {
     let openSideBar = document.getElementById("sidebar");
