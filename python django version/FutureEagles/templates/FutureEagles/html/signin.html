@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'FutureEagles/css/index.css' %}">
+    <script src="{% static 'FutureEagles/js/task.js' %}"></script>
+    <title>Home</title>
+
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="395831929716-qh9p01m4com4riam46q5bjmk8pvrnqru.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <div id="sidebar">
+        <div id="toggle" onclick="showMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div id="sidebar-buttons">
+            <button id="calendar-switch">Calendar</button>
+            <button id="task-switch">Task</button>
+            <button id="notes-switch">Notes</button>
+            <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div></button>
+        </div>
+    </div>
+
+    <div id="center">
+        {% if tab == "tasks" and current_user != "" %}
+            {% block task_container %}
+            {% endblock %}
+
+
+
+        {% elif tab == "notes" and current_user != "" %}
+            {% block notes_container %}
+            {% endblock %}
+
+        {% else %}
+            <p>Please Login.</p>
+
+        {% endif%}
+    </div>
+
+</body>
+<footer>
+    <script>
+        let current_user = "{{current_user|safe}}";
+        console.log(current_user)
+        let current_tab = "{{tab|safe}}"
+        let tasks = "{{ tasks|safe }}".replace("[","").replace("]","").split(",")
+        let due_date = "{{due_date|safe}}".replace("[","").replace("]","").replace(" ","").split(",")
+        let taskDict = {}
+        for (let i = 0;i<tasks.length;i++) {
+            taskDict[due_date[i]] = tasks[i]
+        }
+        console.log(taskDict)
+        let today = new Date()
+        function getDaysInMonth(month,year) {
+            // Here January is 1 based
+            //Day 0 is the last day in the previous month
+            return new Date(year, month, 0).getDate();
+            // Here January is 0 based
+            // return new Date(year, month+1, 0).getDate();
+        };
+
+
+        //sign into google
+        function onSignIn(googleUser) {
+            
+            // Useful data for your client-side scripts:
+            var profile = googleUser.getBasicProfile();
+
+
+            // The ID token you need to pass to your backend:
+            var id_token = googleUser.getAuthResponse().id_token;
+            // testSocket("Signing In,")
+
+            document.getElementById("google-signin-button").remove() //removes google signin button when signing into account
+            //create element using google profile full name
+            let sidebarButtons = document.getElementById("sidebar-buttons");
+            let profileDiv = document.createElement("div");
+            profileDiv.id = "profile-div"
+
+            let profileUser = document.createElement("p");
+            profileUser.innerText = profile.getName();
+            profileUser.id = profile.getId();
+            profileUser.className = "profile-user"
+
+
+            let dropdown = document.createElement("div");
+            dropdown.id = "dropdown"
+            dropdown.addEventListener("click",function() {
+                signOut()
+            })
+            let settingsDivContainer = document.createElement("div");
+            settingsDivContainer.id = "settings-container"
+            let settingsDiv = document.createElement("div");
+            settingsDiv.id = "settings"
+            for (let i = 0;i <= 2;i++) {
+                let span = document.createElement("span");
+                settingsDiv.appendChild(span)
+            } //creates settings button
+            settingsDivContainer.appendChild(settingsDiv)
+            dropdown.appendChild(settingsDivContainer)
+
+            let dropdownContent = document.createElement("div");
+            dropdownContent.id = "dropdown-content"
+            const dropContentList = {
+                "Sign Out":"sign-out",
+            }
+            for (const key in dropContentList) {
+                let dropdownLink = document.createElement("a");
+                dropdownLink.innerText = key
+                dropdownLink.id = `${dropContentList[dropdownLink.innerText]},`
+                dropdownLink.addEventListener("click",function(){
+                    console.log(dropdownLink.id)
+                    testSocket(dropdownLink.id)
+                }) //when dropdown item clicked it sends data to backend consumer
+                dropdownContent.appendChild(dropdownLink)
+            } //creates dropdown menu when hovering over settings button
+
+            profileDiv.append(profileUser)
+            dropdown.appendChild(dropdownContent)
+            profileDiv.append(dropdown)
+            sidebarButtons.append(profileDiv)
+
+            const profileData = {
+                "data message":"sign in",
+                "user":profile.getName(),
+                "ID":profile.getId(),
+                "profile image":profile.getImageUrl(),
+                "email":profile.getEmail()
+            }
+            $.ajax({
+                url:"http://localhost:8000/account/signin/",
+                type: "POST",
+                data: profileData,
+                traditional: true,
+                success:function(response){
+                    let taskList = "{{user_task|safe}}"
+                    window.location = "http://localhost:8000/"
+                    // console.log(taskList)
+                    // console.log(taskDict)
+                    // console.log(Object.entries(taskDict)[2])
+                    // console.log(current_user)
+                    // if (current_user == "") {
+                    //     // window.location.reload()
+                    //     window.location = "http://localhost:8000/account/signin"
+                    // } //reloads the page when signing in IMPORTANT if removed when there will be no get request to fetch the task from db
+                },
+                complete:function(){},
+                error:function (document, textStatus, thrownError){
+                    alert("error");
+                    console.log("error")
+                }
+            }); //sends js dict to django backend view using ajax call
+        }
+
+        function signOut() {
+            const profileData = {
+                "data message":"signing out",
+            }
+            $.ajax({
+                url:"http://localhost:8000/account/signin/",
+                type: "GET",
+                data: profileData,
+                traditional: true,
+                success:function(response){},
+                complete:function(){},
+                error:function (document, textStatus, thrownError){
+                    alert("error");
+                }
+            }); //sends js dict to django backend view using ajax call
+
+
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                auth2.disconnect();
+                document.location='http://localhost:8000/';
+                window.location.reload()
+            });
+
+            document.getElementById("profile-div").remove()
+        } //signs out of google account
+
+
+    </script>
+</footer>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'FutureEagles/css/index.css' %}">
+    <script src="{% static 'FutureEagles/js/index.js' %}"></script>
+    <title>Home</title>
+
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="395831929716-0ap3dtslug1o0m2273egdbojq12aj9gd.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <div id="sidebar">
+        <div id="toggle" onclick="showMobileNav()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div id="sidebar-buttons">
+            <button id="calendar-switch">Calendar</button>
+            <button id="list-switch">List</button>
+            <button id="notes-switch">Notes</button>
+            <button id="google-signin-button" ><div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div></button>
+            
+        </div>
+    </div>
+
+    <div id="center">
+        <!-- <button id="create-task">Create new Task</button> -->
+        <!-- <p>Centered div</p> -->
+            <ul id="list-container">
+                <button id="create-task">Create new Task</button>
+                <div id="column-titles">
+                    <p>Task</p>
+                    <p>Due Date</p>
+                    <p>Status</p>
+                    <p>Edit</p>
+                </div>
+
+                
+                <!-- <li>
+                    <div id="task">sleep</div>
+                    <div id="end-date">5min</div>
+                    <div id="status">X</div>
+                    <div id="dropdown">
+                        <div id="settings-container">
+                            <div id="settings">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div id="dropdown-content">
+                            <a href="">test 1</a>
+                            <a href="">test 2</a>
+                            <a href="">test 3</a>
+                        </div>
+                    </div>
+                </li> -->
+ 
+                {% for i in user_task %}
+                    {% if "default" == i.task %}
+                    {% else %}
+                        <li id="{{i.task}}">
+                            <div id="task">{{i.task}}</div>
+                            <div id="end-date">{{i.due_date}}</div>
+                            <div id="status">{{i.status}}</div>
+                            <div id="dropdown">
+                                <div id="settings-container">
+                                    <div id="settings">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                                <div id="dropdown-content">
+                                    <a onclick="testSocket(id)" id="edit task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Edit</a>
+                                    <!-- <a onclick="testSocket(id)" id="change task status,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Change status</a> -->
+                                    <a onclick="testSocket(id)" id="delete task,{{i.task}},{{i.due_date}},{{i.status}},{{current_user}},{{i.user_id}}">Delete</a>
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+            </ul>
+        <div id="popup-container">
+            <div class="popup">
+                <div class="popup-header"><button>X</button></div>
+                <div class="popup-body"><h3>Please describe the task below.</h3></div>
+                <div class="popup-footer">
+                    <input type="text" placeholder="Task..." name="task" id="new-task">
+                    <input type="date" name="task-date" id="task-date">
+                    <br>
+                    <button id="submit-task" >Enter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+<footer>
+    <script>
+        //sign into google
+        function onSignIn(googleUser) {
+            // Useful data for your client-side scripts:
+            var profile = googleUser.getBasicProfile();
+            // console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+            // console.log('Full Name: ' + profile.getName());
+            // console.log('Given Name: ' + profile.getGivenName());
+            // console.log('Family Name: ' + profile.getFamilyName());
+            // console.log("Image URL: " + profile.getImageUrl());
+            // console.log("Email: " + profile.getEmail());
+
+            // The ID token you need to pass to your backend:
+            var id_token = googleUser.getAuthResponse().id_token;
+            // console.log("ID Token: " + id_token);
+            // testSocket("Signing In,")
+
+            document.getElementById("google-signin-button").remove() //removes google signin button when signing into account
+            //create element using google profile full name
+            let sidebarButtons = document.getElementById("sidebar-buttons");
+            let profileDiv = document.createElement("div");
+            profileDiv.id = "profile-div"
+
+            let profileUser = document.createElement("p");
+            profileUser.innerText = profile.getName();
+            profileUser.id = profile.getId()
+            profileUser.className = "profile-user"
+
+
+            let dropdown = document.createElement("div");
+            dropdown.id = "dropdown"
+            dropdown.addEventListener("click",function() {
+                signOut()
+            })
+            let settingsDivContainer = document.createElement("div");
+            settingsDivContainer.id = "settings-container"
+            let settingsDiv = document.createElement("div");
+            settingsDiv.id = "settings"
+            for (let i = 0;i <= 2;i++) {
+                let span = document.createElement("span");
+                settingsDiv.appendChild(span)
+            } //creates settings button
+            settingsDivContainer.appendChild(settingsDiv)
+            dropdown.appendChild(settingsDivContainer)
+            // sidebarButtons.append(dropdown)
+
+            let dropdownContent = document.createElement("div");
+            dropdownContent.id = "dropdown-content"
+            const dropContentList = {
+                "Sign Out":"sign-out",
+            }
+            for (const key in dropContentList) {
+                let dropdownLink = document.createElement("a");
+                dropdownLink.innerText = key
+                dropdownLink.id = `${dropContentList[dropdownLink.innerText]},`
+                dropdownLink.addEventListener("click",function(){
+                    console.log(dropdownLink.id)
+                    testSocket(dropdownLink.id)
+                }) //when dropdown item clicked it sends data to backend consumer
+                dropdownContent.appendChild(dropdownLink)
+            } //creates dropdown menu when hovering over settings button
+
+            profileDiv.append(profileUser)
+            dropdown.appendChild(dropdownContent)
+            profileDiv.append(dropdown)
+            sidebarButtons.append(profileDiv)
+
+            const profileData = {
+                "data message":"sign in",
+                "user":profile.getName(),
+                "ID":profile.getId(),
+                "profile image":profile.getImageUrl(),
+                "email":profile.getEmail()
+            }
+            $.ajax({
+                url:"http://localhost:8000/",
+                type: "POST",
+                data: profileData,
+                traditional: true,
+                success:function(response){
+                    let taskList = "{{user_task|safe}}"
+                    // console.log(taskList)
+                    if ("<QuerySet []>" == taskList) {
+                        window.location.reload()
+                    } //reloads the page when signing in IMPORTANT if removed when there will be no get request to fetch the task from db
+                },
+                complete:function(){},
+                error:function (document, textStatus, thrownError){
+                    alert("error");
+                    console.log("error")
+                }
+            }); //sends js dict to django backend view using ajax call
+        }
+
+        function signOut() {
+            const profileData = {
+                "data message":"signing out",
+            }
+            $.ajax({
+                url:"/",
+                type: "POST",
+                data: profileData,
+                traditional: true,
+                success:function(response){},
+                complete:function(){},
+                error:function (document, textStatus, thrownError){
+                    alert("error");
+                    // console.log(profile.getName())
+                }
+            }); //sends js dict to django backend view using ajax call
+
+
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                auth2.disconnect();
+                document.location='http://localhost:8000/';
+            });
+
+            document.getElementById("profile-div").remove()
+        } //signs out of google account
+
+
+        let createTask = document.getElementById("create-task");
+        createTask.addEventListener("click",function() {
+            // testSocket()
+            let popupContainer = document.querySelector("#popup-container")
+            openPopup(popupContainer)
+        })
+
+        let taskButton = document.getElementById("submit-task")
+        taskButton.addEventListener("click",function() {
+            sendTaskData("add new task")
+        })
+
+        let closePopupButton = document.querySelector(".popup-header").children[0]
+        closePopupButton.addEventListener("click",function() {
+            let popupContainer = document.querySelector("#popup-container")
+            closePopup(popupContainer)
+        })
+
+    </script>
+</footer>
+</html>
