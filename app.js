@@ -6,6 +6,7 @@ const path = require("path");
 const http = require('http');
 const server = http.createServer(app); //connects the express app to http
 const { Server } = require("socket.io");
+require('dotenv').config();
 const io = new Server(server); //connects the http server to a websocket connection
 const port = process.env.PORT || 8000; //set port to a port provided in env variables or set to default 8000
 const users = {}
@@ -26,11 +27,11 @@ app.use(express.urlencoded());
 
 // mysql connection to google db
 const con = mysql.createPool({
-    host: "us-cdbr-east-04.cleardb.com",
-    user: "bcc2ec4fcecbe5",
-    password: "cfb6b512",
-    database: "heroku_d10e4ce632a9633",
-  });
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DB_NAME,
+});
 
 //Socket functions
 io.on('connection', (socket) => {
