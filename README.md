@@ -5,14 +5,8 @@
 - Users can also create sticky notes for any occasion
 
 ## Features 
-- Calendar of current year
 - Creating tasks
 - Creating notes
-
-## Calendar
-<p> 
-    <img src="design/calendar preview.png">
-</p>
 
 ## Task
 <p> 

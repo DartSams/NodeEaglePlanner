@@ -23,7 +23,6 @@
         </div>
 
         <div id="sidebar-buttons">
-            <button id="calendar-switch">Calendar</button>
             <button id="task-switch">Task</button>
             <button id="notes-switch">Notes</button>
             <div id="profile-div">
@@ -49,26 +48,7 @@
     <div id="center" class=<%= user.tab %>>
         <!-- ############NOTES###########33 -->
         
-        <% if (user.tab === "calendar") {%>
-            <!-- <div id="calendar-container" >
-                
-            </div> -->
-        
-            <div id="popup-container">
-                <div class="popup" id="note-popup">
-                    <div class="popup-header"><button>X</button></div>
-                    <div class="popup-body">
-                        <label for="new-note-tag">Tag:</label>
-                        <input type="text" id="new-note-tag" value="#">
-                    </div>
-                    <div class="popup-footer">
-                        <textarea name="new-note" id="new-note" cols="30" rows="10"></textarea>
-                        <br>
-                        <button id="submit-note">Enter</button>
-                    </div>
-                </div>
-            </div>
-        <% } else if (user.tab === "tasks") {%>
+        <% if (user.tab === "tasks") {%>
             <% allTask = JSON.parse(JSON.stringify(data)) %>
             <ul id="list-container">
                 <button id="create-task">Create new Task</button>
@@ -178,7 +158,8 @@
 
     let current_user = "<%= user.name %>"
     let current_tab = "<%= user.tab %>"
-    let taskDict = JSON.parse('<%- JSON.stringify(data) %>')
+    // let taskDict = JSON.parse('<%= JSON.stringify(data) %>')
+    // console.log("<%= data %>")
     // for (let i=0;i<data.length;i++) {
     //     console.log(data[i])
     // }
@@ -188,11 +169,6 @@
     //     createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),taskDict)
     // } //after getting all task from db replace {} with that
 
-
-    let calendarSwitch = document.querySelector("#calendar-switch");
-    calendarSwitch.addEventListener("click",function() {
-        window.location = "/profile/<%= user.name %>/calendar"
-    })
 
     let listSwitch = document.querySelector("#task-switch");
     listSwitch.addEventListener("click",function() {
@@ -260,7 +236,6 @@
                 let notesButton = document.getElementById("submit-note")
                 notesButton.addEventListener("click",function() {
                     sendTaskData("add new note")
-                    // displayNewNotes("cum")
                     // closePopup(popupContainer)
                 })
             } //create popup for notes
@@ -296,13 +271,7 @@
                 displayTaggedNotes(searchTag.value)
                 document.querySelector("#note-tag-input").value = ""
             })
-        } else if (current_tab == "calendar") {
-            createMonth(today.getMonth()+1,getDaysInMonth(today.getMonth(),2022),taskDict)
-            // for (let i = 1;i<=12;i++) {
-            //     console.log(getDaysInMonth(i,2022))
-            // } //returns the max number of days in all 12 months
         }
-        
         
         if (document.querySelector("#popup-container")) {
             let closePopupButton = document.querySelector(".popup-header").children[0]
